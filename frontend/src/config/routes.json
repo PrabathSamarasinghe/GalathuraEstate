@@ -20,7 +20,7 @@
     "tabName": "Employees"
   },
   {
-    "path":"/pnl",
+    "path":"/profit-and-loss",
     "component":"ProfitAndLoss",
     "tabName":"Profit & Loss"
   }
