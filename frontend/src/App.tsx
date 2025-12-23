@@ -3,7 +3,7 @@ import { lazy, Suspense } from "react";
 import Loading from "./components/Loading";
 // import DataLoader from "./components/DataLoader";
 import routesConfig from "./config/routes.json";
-import SignIn from "./pages/Signin";
+import SignIn from "./pages/SignIn";
 const Layout = lazy(() => import("./context/Layout"));
 
 const Component = (componentName: string) => {
