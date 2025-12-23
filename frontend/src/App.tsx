@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Loading from "./components/Loading";
+// import DataLoader from "./components/DataLoader";
 import routesConfig from "./config/routes.json";
-
+import SignIn from "./pages/Signin";
 const Layout = lazy(() => import("./context/Layout"));
 
 const Component = (componentName: string) => {
@@ -14,6 +15,7 @@ const App = () => {
     <BrowserRouter basename="/">
       <Suspense fallback={<Loading />}>
         <Routes>
+          <Route path="/" element={<SignIn />} />
           <Route element={<Layout />}>
             {routesConfig.map((route) => {
               const LazyComponent = Component(route.component);
@@ -28,6 +30,8 @@ const App = () => {
           </Route>
         </Routes>
       </Suspense>
+      {/* Developer tool - remove in production */}
+      {/* <DataLoader /> */}
     </BrowserRouter>
   );
 };
