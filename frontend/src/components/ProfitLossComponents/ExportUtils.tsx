@@ -1,4 +1,5 @@
 import React from 'react';
+import toast from 'react-hot-toast';
 
 interface ExportUtilsProps {
   statementRef: React.RefObject<HTMLDivElement>;
@@ -11,7 +12,7 @@ const ExportUtils: React.FC<ExportUtilsProps> = ({ statementRef, periodLabel }) 
 
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
-      alert('Please allow pop-ups to print the P&L statement');
+      toast.error('Please allow pop-ups to print the P&L statement');
       return;
     }
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import type { TransactionFormData } from "../../utils/Interfaces";
 import {
   TransactionType,
@@ -81,11 +82,11 @@ const TransactionForm = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.amount <= 0) {
-      alert("Amount must be greater than 0");
+      toast.error("Amount must be greater than 0");
       return;
     }
     if (!formData.description) {
-      alert("Please select a description");
+      toast.error("Please select a description");
       return;
     }
     onSubmit(formData);

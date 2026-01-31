@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface PeriodSelectorProps {
   onPeriodChange: (fromDate: string, toDate: string) => void;
@@ -10,11 +11,11 @@ const PeriodSelector = ({ onPeriodChange }: PeriodSelectorProps) => {
 
   const handleCustomApply = () => {
     if (!fromDate || !toDate) {
-      alert("Please select both From and To dates");
+      toast.error("Please select both From and To dates");
       return;
     }
     if (fromDate > toDate) {
-      alert("From date cannot be after To date");
+      toast.error("From date cannot be after To date");
       return;
     }
     onPeriodChange(fromDate, toDate);

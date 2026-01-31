@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   LineChart,
   Line,
@@ -12,26 +12,66 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// Sample data - replace with actual data from your API
-const generateSampleData = () => {
-  const data = [];
-  const today = new Date();
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    data.push({
-      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      inflow: Math.floor(Math.random() * 500) + 100,
-      outflow: Math.floor(Math.random() * 400) + 150,
-      stock: 5000 - (i * 20) + Math.floor(Math.random() * 200),
-    });
-  }
-  return data;
-};
+interface Transaction {
+  id: string;
+  date: string;
+  time: string;
+  type: string;
+  quantity: number;
+  materialType?: string;
+  runningBalance: number;
+}
 
-const ChartsSection = () => {
+interface ChartsSectionProps {
+  transactions?: Transaction[];
+}
+
+const ChartsSection = ({ transactions = [] }: ChartsSectionProps) => {
   const [dateRange, setDateRange] = useState('30');
-  const chartData = generateSampleData();
+
+  // Generate chart data from transactions
+  const chartData = useMemo(() => {
+    const days = parseInt(dateRange);
+    const today = new Date();
+    const data: { date: string; inflow: number; outflow: number; stock: number }[] = [];
+    
+    // Create a map of dates to aggregate transactions
+    const dateMap = new Map<string, { inflow: number; outflow: number; stock: number }>();
+    
+    // Initialize all days in range
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      dateMap.set(dateStr, { inflow: 0, outflow: 0, stock: 0 });
+    }
+    
+    // Aggregate transactions by date
+    transactions.forEach(txn => {
+      const existing = dateMap.get(txn.date);
+      if (existing) {
+        if (txn.type === 'inflow' || txn.type === 'INFLOW' || txn.type === 'Inflow') {
+          existing.inflow += txn.quantity;
+        } else {
+          existing.outflow += txn.quantity;
+        }
+        existing.stock = txn.runningBalance;
+      }
+    });
+    
+    // Convert map to array with formatted dates
+    dateMap.forEach((value, key) => {
+      const date = new Date(key);
+      data.push({
+        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        inflow: value.inflow,
+        outflow: value.outflow,
+        stock: value.stock,
+      });
+    });
+    
+    return data;
+  }, [transactions, dateRange]);
 
   return (
     <div className="space-y-4">

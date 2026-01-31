@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   LineChart,
   Line,
@@ -15,34 +15,93 @@ import {
   Cell,
 } from 'recharts';
 
-// Sample data
-const generateProductionDispatchData = () => {
-  const data = [];
-  const today = new Date();
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    data.push({
-      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      production: Math.floor(Math.random() * 200) + 400,
-      dispatch: Math.floor(Math.random() * 180) + 350,
-      stock: 8500 + (i * 10) + Math.floor(Math.random() * 300),
-    });
-  }
-  return data;
-};
+interface MadeTeaTransaction {
+  id: string;
+  date: string;
+  type: string;
+  grade: string;
+  inflow: number;
+  outflow: number;
+  balance: number;
+}
 
-const gradeDistribution = [
-  { name: 'BOP', value: 3500, color: '#10b981' },
-  { name: 'FBOP', value: 2200, color: '#3b82f6' },
-  { name: 'OP', value: 1800, color: '#f59e0b' },
-  { name: 'Dust', value: 1000, color: '#8b5cf6' },
-  { name: 'Others', value: 500, color: '#ec4899' },
-];
+interface GradeStock {
+  grade: string;
+  quantity: number;
+}
 
-const ChartsSection = () => {
+interface ChartsSectionProps {
+  transactions?: MadeTeaTransaction[];
+  gradeStocks?: GradeStock[];
+}
+
+const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899'];
+
+const ChartsSection = ({ transactions = [], gradeStocks = [] }: ChartsSectionProps) => {
   const [dateRange, setDateRange] = useState('30');
-  const chartData = generateProductionDispatchData();
+
+  // Generate chart data from transactions
+  const chartData = useMemo(() => {
+    const days = parseInt(dateRange);
+    const today = new Date();
+    const data: { date: string; production: number; dispatch: number; stock: number }[] = [];
+    
+    // Create a map of dates to aggregate transactions
+    const dateMap = new Map<string, { production: number; dispatch: number; stock: number }>();
+    
+    // Initialize all days in range
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      dateMap.set(dateStr, { production: 0, dispatch: 0, stock: 0 });
+    }
+    
+    // Aggregate transactions by date
+    transactions.forEach(txn => {
+      const existing = dateMap.get(txn.date);
+      if (existing) {
+        if (txn.type === 'production' || txn.type === 'PRODUCTION') {
+          existing.production += txn.inflow;
+        } else {
+          existing.dispatch += txn.outflow;
+        }
+        existing.stock = txn.balance;
+      }
+    });
+    
+    // Convert map to array with formatted dates
+    dateMap.forEach((value, key) => {
+      const date = new Date(key);
+      data.push({
+        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        production: value.production,
+        dispatch: value.dispatch,
+        stock: value.stock,
+      });
+    });
+    
+    return data;
+  }, [transactions, dateRange]);
+
+  // Generate grade distribution data
+  const gradeDistribution = useMemo(() => {
+    if (gradeStocks.length === 0) {
+      return [
+        { name: 'BOP', value: 0, color: COLORS[0] },
+        { name: 'FBOP', value: 0, color: COLORS[1] },
+        { name: 'OP', value: 0, color: COLORS[2] },
+        { name: 'Dust', value: 0, color: COLORS[3] },
+        { name: 'Others', value: 0, color: COLORS[4] },
+      ];
+    }
+    
+    return gradeStocks.map((stock, index) => ({
+      name: stock.grade,
+      value: stock.quantity,
+      color: COLORS[index % COLORS.length],
+    }));
+  }, [gradeStocks]);
 
   return (
     <div className="space-y-4">

@@ -3,22 +3,25 @@ import PeriodSelector from "../components/ProfitLossComponents/PeriodSelector";
 import PLStatement from "../components/ProfitLossComponents/PLStatement";
 import ExportUtils from "../components/ProfitLossComponents/ExportUtils";
 import type { Transaction } from "../utils/Interfaces";
+import { useQuery } from "@apollo/client";
+import { GET_TRANSACTIONS } from "../graphql/queries";
+import Loading from "../components/Loading";
 
 const ProfitAndLoss = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
   const [showComparison, setShowComparison] = useState<boolean>(true);
   const statementRef = useRef<HTMLDivElement>(null!);
 
-  // Load transactions from localStorage
-  useEffect(() => {
-    const storedTransactions = localStorage.getItem("galathura_transactions");
-    if (storedTransactions) {
-      setTransactions(JSON.parse(storedTransactions));
-    }
+  // GraphQL query
+  const { data, loading, error } = useQuery(GET_TRANSACTIONS, {
+    fetchPolicy: 'cache-and-network',
+  });
 
-    // Set default period to current month
+  const transactions: Transaction[] = data?.transactions || [];
+
+  // Set default period to current month
+  useEffect(() => {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -104,6 +107,18 @@ const ProfitAndLoss = () => {
       options
     )} - ${prevTo.toLocaleDateString("en-US", options)}`;
   }, [fromDate, toDate, showComparison]);
+
+  if (loading && !data) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600">Error loading transactions: {error.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

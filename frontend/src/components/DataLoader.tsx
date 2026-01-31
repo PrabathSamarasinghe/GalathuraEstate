@@ -45,7 +45,7 @@ const DataLoader = () => {
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            20 employees + 7 days attendance
+            20 employees + 7 days attendance + 3 months transactions
           </p>
         </div>
       )}

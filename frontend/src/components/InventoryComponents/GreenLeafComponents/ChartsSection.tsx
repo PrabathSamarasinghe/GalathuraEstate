@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   LineChart,
   Line,
@@ -15,32 +15,90 @@ import {
   Cell,
 } from 'recharts';
 
-// Sample data - replace with actual data from your API
-const generateIntakeData = () => {
-  const data = [];
-  const today = new Date();
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    data.push({
-      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      intake: Math.floor(Math.random() * 500) + 800,
-      madeTea: Math.floor(Math.random() * 120) + 180,
-    });
-  }
-  return data;
-};
+interface IntakeRecord {
+  id: string;
+  date: string;
+  supplier: string;
+  supplierType: string;
+  netWeight: number;
+}
 
-const supplierData = [
-  { name: 'Estate A', value: 4500, color: '#10b981' },
-  { name: 'Estate B', value: 3200, color: '#3b82f6' },
-  { name: 'Smallholders', value: 2800, color: '#f59e0b' },
-  { name: 'Estate C', value: 1500, color: '#8b5cf6' },
-];
+interface ChartsSectionProps {
+  intakes?: IntakeRecord[];
+}
 
-const ChartsSection = () => {
+const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'];
+
+const ChartsSection = ({ intakes = [] }: ChartsSectionProps) => {
   const [dateRange, setDateRange] = useState('30');
-  const chartData = generateIntakeData();
+
+  // Generate chart data from intakes
+  const chartData = useMemo(() => {
+    const days = parseInt(dateRange);
+    const today = new Date();
+    const data: { date: string; intake: number; madeTea: number }[] = [];
+    
+    // Create a map of dates to aggregate intakes
+    const dateMap = new Map<string, { intake: number; madeTea: number }>();
+    
+    // Initialize all days in range
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      dateMap.set(dateStr, { intake: 0, madeTea: 0 });
+    }
+    
+    // Aggregate intakes by date
+    intakes.forEach(intake => {
+      const existing = dateMap.get(intake.date);
+      if (existing) {
+        existing.intake += intake.netWeight;
+        // Estimate made tea output (~22% conversion ratio)
+        existing.madeTea += intake.netWeight * 0.22;
+      }
+    });
+    
+    // Convert map to array with formatted dates
+    dateMap.forEach((value, key) => {
+      const date = new Date(key);
+      data.push({
+        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        intake: Math.round(value.intake),
+        madeTea: Math.round(value.madeTea),
+      });
+    });
+    
+    return data;
+  }, [intakes, dateRange]);
+
+  // Generate supplier distribution data
+  const supplierData = useMemo(() => {
+    const supplierMap = new Map<string, number>();
+    
+    intakes.forEach(intake => {
+      const current = supplierMap.get(intake.supplier) || 0;
+      supplierMap.set(intake.supplier, current + intake.netWeight);
+    });
+    
+    const data: { name: string; value: number; color: string }[] = [];
+    let colorIndex = 0;
+    supplierMap.forEach((value, name) => {
+      data.push({
+        name,
+        value: Math.round(value),
+        color: COLORS[colorIndex % COLORS.length],
+      });
+      colorIndex++;
+    });
+    
+    // If no data, return default
+    if (data.length === 0) {
+      return [{ name: 'No Data', value: 1, color: '#e5e7eb' }];
+    }
+    
+    return data.sort((a, b) => b.value - a.value).slice(0, 6);
+  }, [intakes]);
 
   return (
     <div className="space-y-4">

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@apollo/client';
+import { LOGIN } from '../graphql/queries';
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -9,7 +11,9 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loginMutation, { loading }] = useMutation(LOGIN);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -19,28 +23,31 @@ const SignIn = () => {
       return;
     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address');
-      return;
-    }
+    try {
+      const { data } = await loginMutation({
+        variables: { username: email, password },
+      });
 
-    // For demo purposes, accept any valid email and password
-    // In production, this would authenticate against a backend
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
+      if (data?.login?.token) {
+        // Store token and user data
+        localStorage.setItem('galathura_token', data.login.token);
+        localStorage.setItem('galathura_user', JSON.stringify(data.login.user));
+        
+        if (rememberMe) {
+          localStorage.setItem('galathura_email', email);
+        }
 
-    // Store auth state (in production, use proper JWT/session management)
-    localStorage.setItem('galathura_auth', 'true');
-    if (rememberMe) {
-      localStorage.setItem('galathura_email', email);
+        // Navigate to dashboard
+        navigate('/dashboard');
+      }
+    } catch (err: unknown) {
+      console.error('Login error:', err);
+      if (err instanceof Error) {
+        setError(err.message || 'Login failed. Please check your credentials.');
+      } else {
+        setError('Login failed. Please check your credentials.');
+      }
     }
-
-    // Navigate to dashboard
-    navigate('/dashboard');
   };
 
   return (
@@ -143,18 +150,19 @@ const SignIn = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition font-medium shadow-sm hover:shadow-md"
+              disabled={loading}
+              className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition font-medium shadow-sm hover:shadow-md disabled:bg-green-400 disabled:cursor-not-allowed"
             >
-              Sign In
+              {loading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
 
           {/* Demo Credentials */}
           <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <p className="text-xs text-gray-600 mb-2 font-medium">Demo Access:</p>
+            <p className="text-xs text-gray-600 mb-2 font-medium">Demo Credentials:</p>
             <p className="text-xs text-gray-500">
-              <span className="font-mono">Email:</span> Any valid email<br />
-              <span className="font-mono">Password:</span> Any 6+ characters
+              <span className="font-mono">Email:</span> admin@galathura.lk<br />
+              <span className="font-mono">Password:</span> admin123
             </p>
           </div>
         </div>

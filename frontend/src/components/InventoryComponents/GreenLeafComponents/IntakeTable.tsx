@@ -3,91 +3,21 @@ interface IntakeRecord {
   date: string;
   time: string;
   supplier: string;
-  supplierType: 'estate' | 'smallholder';
+  supplierType: string;
   vehicleNumber: string;
   grossWeight: number;
   tareWeight: number;
   netWeight: number;
   quality: string;
-  session: 'AM' | 'PM';
+  session: string;
   remarks?: string;
 }
 
-// Sample intake data - replace with actual data from your API
-const sampleIntakes: IntakeRecord[] = [
-  {
-    id: '1',
-    date: '2025-12-23',
-    time: '14:30',
-    supplier: 'Estate A',
-    supplierType: 'estate',
-    vehicleNumber: 'ABC-1234',
-    grossWeight: 1250,
-    tareWeight: 50,
-    netWeight: 1200,
-    quality: 'Grade A',
-    session: 'PM',
-    remarks: 'Good quality',
-  },
-  {
-    id: '2',
-    date: '2025-12-23',
-    time: '10:15',
-    supplier: 'Smallholder - Perera',
-    supplierType: 'smallholder',
-    vehicleNumber: 'XYZ-5678',
-    grossWeight: 580,
-    tareWeight: 30,
-    netWeight: 550,
-    quality: 'Grade B',
-    session: 'AM',
-    remarks: '',
-  },
-  {
-    id: '3',
-    date: '2025-12-23',
-    time: '08:45',
-    supplier: 'Estate B',
-    supplierType: 'estate',
-    vehicleNumber: 'DEF-9012',
-    grossWeight: 1820,
-    tareWeight: 70,
-    netWeight: 1750,
-    quality: 'Grade A',
-    session: 'AM',
-    remarks: 'Premium quality',
-  },
-  {
-    id: '4',
-    date: '2025-12-22',
-    time: '15:20',
-    supplier: 'Estate C',
-    supplierType: 'estate',
-    vehicleNumber: 'GHI-3456',
-    grossWeight: 980,
-    tareWeight: 45,
-    netWeight: 935,
-    quality: 'Grade B',
-    session: 'PM',
-    remarks: 'Some moisture',
-  },
-  {
-    id: '5',
-    date: '2025-12-22',
-    time: '09:30',
-    supplier: 'Smallholder - Silva',
-    supplierType: 'smallholder',
-    vehicleNumber: 'JKL-7890',
-    grossWeight: 420,
-    tareWeight: 25,
-    netWeight: 395,
-    quality: 'Grade A',
-    session: 'AM',
-    remarks: '',
-  },
-];
+interface IntakeTableProps {
+  intakes?: IntakeRecord[];
+}
 
-const IntakeTable = () => {
+const IntakeTable = ({ intakes = [] }: IntakeTableProps) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-300 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-300 bg-gray-50 flex justify-between items-center">
@@ -121,46 +51,54 @@ const IntakeTable = () => {
             </tr>
           </thead>
           <tbody className="text-sm">
-            {sampleIntakes.map((intake, index) => (
-              <tr
-                key={intake.id}
-                className={`hover:bg-gray-50 transition-colors ${
-                  index !== sampleIntakes.length - 1 ? 'border-b border-gray-200' : ''
-                }`}
-              >
-                <td className="px-4 py-3 text-gray-700">{intake.date}</td>
-                <td className="px-4 py-3 text-gray-700">{intake.time}</td>
-                <td className="px-4 py-3">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                    intake.session === 'AM' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'
-                  }`}>
-                    {intake.session}
-                  </span>
+            {intakes.length === 0 ? (
+              <tr>
+                <td colSpan={10} className="px-4 py-8 text-center text-gray-500">
+                  No intake records yet. Add your first intake above.
                 </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${
-                      intake.supplierType === 'estate' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'
-                    }`}>
-                      {intake.supplierType === 'estate' ? 'Estate' : 'Small'}
-                    </span>
-                    <span className="text-gray-700">{intake.supplier}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-gray-700 font-mono text-xs">{intake.vehicleNumber}</td>
-                <td className="px-4 py-3 text-right text-gray-700">{intake.grossWeight}</td>
-                <td className="px-4 py-3 text-right text-gray-500">{intake.tareWeight}</td>
-                <td className="px-4 py-3 text-right font-semibold text-green-700">{intake.netWeight}</td>
-                <td className="px-4 py-3">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                    intake.quality === 'Grade A' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {intake.quality}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-gray-600 text-xs">{intake.remarks || '-'}</td>
               </tr>
-            ))}
+            ) : (
+              intakes.map((intake, index) => (
+                <tr
+                  key={intake.id}
+                  className={`hover:bg-gray-50 transition-colors ${
+                    index !== intakes.length - 1 ? 'border-b border-gray-200' : ''
+                  }`}
+                >
+                  <td className="px-4 py-3 text-gray-700">{intake.date}</td>
+                  <td className="px-4 py-3 text-gray-700">{intake.time}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                      intake.session === 'AM' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'
+                    }`}>
+                      {intake.session}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${
+                        intake.supplierType === 'ESTATE' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'
+                      }`}>
+                        {intake.supplierType === 'ESTATE' ? 'Estate' : 'Small'}
+                      </span>
+                      <span className="text-gray-700">{intake.supplier}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-gray-700 font-mono text-xs">{intake.vehicleNumber}</td>
+                  <td className="px-4 py-3 text-right text-gray-700">{intake.grossWeight}</td>
+                  <td className="px-4 py-3 text-right text-gray-500">{intake.tareWeight}</td>
+                  <td className="px-4 py-3 text-right font-semibold text-green-700">{intake.netWeight}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                      intake.quality === 'GRADE_A' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {intake.quality?.replace('_', ' ') || intake.quality}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-gray-600 text-xs">{intake.remarks || '-'}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

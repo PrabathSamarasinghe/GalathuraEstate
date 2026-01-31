@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import type {
   Transaction,
   TransactionFormData,
@@ -8,37 +8,34 @@ import { TransactionType } from "../utils/enums";
 import TransactionForm from "../components/TransactionComponents/TransactionForm";
 import TransactionSummaryCard from "../components/TransactionComponents/TransactionSummaryCard";
 import TransactionTable from "../components/TransactionComponents/TransactionTable";
+import { useMutation, useQuery } from "@apollo/client";
+import toast from "react-hot-toast";
+import { GET_TRANSACTIONS, CREATE_TRANSACTION, UPDATE_TRANSACTION, DELETE_TRANSACTION } from "../graphql/queries";
+import Loading from "../components/Loading";
+import { toGraphQLEnum } from "../utils/enumMappings";
 
 const ExpensesAndIncome = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>();
 
-  // Load transactions from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem("galathura_transactions");
-    if (stored) {
-      try {
-        setTransactions(JSON.parse(stored));
-      } catch (error) {
-        console.error("Error loading transactions:", error);
-      }
-    }
-  }, []);
+  // GraphQL queries and mutations
+  const { data, loading, error, refetch } = useQuery(GET_TRANSACTIONS, {
+    fetchPolicy: 'cache-and-network',
+  });
 
-  // Save transactions to localStorage
-  useEffect(() => {
-    if (transactions.length > 0 || localStorage.getItem("galathura_transactions")) {
-      localStorage.setItem("galathura_transactions", JSON.stringify(transactions));
-    }
-  }, [transactions]);
+  const [createTransaction] = useMutation(CREATE_TRANSACTION, {
+    onCompleted: () => refetch(),
+  });
 
-  // Generate transaction ID
-  const generateTransactionId = (): string => {
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    return `TXN${timestamp}${random}`;
-  };
+  const [updateTransaction] = useMutation(UPDATE_TRANSACTION, {
+    onCompleted: () => refetch(),
+  });
+
+  const [deleteTransaction] = useMutation(DELETE_TRANSACTION, {
+    onCompleted: () => refetch(),
+  });
+
+  const transactions: Transaction[] = data?.transactions || [];
 
   // Calculate summary
   const summary: TransactionSummary = useMemo(() => {
@@ -89,32 +86,29 @@ const ExpensesAndIncome = () => {
     };
   }, [transactions]);
 
-  const handleSubmit = (data: TransactionFormData) => {
-    if (editingTransaction) {
-      // Update existing transaction
-      setTransactions((prev) =>
-        prev.map((txn) =>
-          txn.id === editingTransaction.id
-            ? {
-                ...data,
-                id: editingTransaction.id,
-                createdAt: editingTransaction.createdAt,
-                createdBy: editingTransaction.createdBy,
-                lastEditedAt: new Date().toISOString(),
-              }
-            : txn
-        )
-      );
-    } else {
-      // Add new transaction
-      const newTransaction: Transaction = {
-        ...data,
-        id: generateTransactionId(),
-        createdAt: new Date().toISOString(),
-      };
-      setTransactions((prev) => [...prev, newTransaction]);
+  const handleSubmit = async (formData: TransactionFormData) => {
+    const input = {
+      date: formData.date,
+      type: toGraphQLEnum.transactionType(formData.type),
+      category: formData.category,
+      description: formData.description,
+      amount: formData.amount,
+      paymentType: toGraphQLEnum.paymentType(formData.paymentType),
+      referenceNo: formData.referenceNo,
+      remarks: formData.remarks,
+    };
+
+    try {
+      if (editingTransaction) {
+        await updateTransaction({ variables: { id: editingTransaction.id, input } });
+      } else {
+        await createTransaction({ variables: { input } });
+      }
+      handleCloseForm();
+    } catch (err) {
+      console.error("Error saving transaction:", err);
+      toast.error("Failed to save transaction. Please try again.");
     }
-    handleCloseForm();
   };
 
   const handleEdit = (transaction: Transaction) => {
@@ -122,8 +116,15 @@ const ExpensesAndIncome = () => {
     setShowForm(true);
   };
 
-  const handleDelete = (transactionId: string) => {
-    setTransactions((prev) => prev.filter((txn) => txn.id !== transactionId));
+  const handleDelete = async (transactionId: string) => {
+    if (window.confirm("Are you sure you want to delete this transaction?")) {
+      try {
+        await deleteTransaction({ variables: { id: transactionId } });
+      } catch (err) {
+        console.error("Error deleting transaction:", err);
+        toast.error("Failed to delete transaction.");
+      }
+    }
   };
 
   const handleCloseForm = () => {
@@ -135,6 +136,21 @@ const ExpensesAndIncome = () => {
     setEditingTransaction(undefined);
     setShowForm(true);
   };
+
+  if (loading && !data) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600">Error loading transactions: {error.message}</p>
+        <button onClick={() => refetch()} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

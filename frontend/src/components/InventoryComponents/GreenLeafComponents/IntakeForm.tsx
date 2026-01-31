@@ -1,6 +1,20 @@
 import { useState } from 'react';
 
-const IntakeForm = () => {
+interface IntakeFormProps {
+  onSubmit?: (data: {
+    supplier: string;
+    supplierType: string;
+    vehicleNumber: string;
+    grossWeight: number;
+    tareWeight: number;
+    netWeight: number;
+    quality: string;
+    session: string;
+    remarks?: string;
+  }) => Promise<void>;
+}
+
+const IntakeForm = ({ onSubmit }: IntakeFormProps) => {
   const [supplier, setSupplier] = useState('');
   const [supplierType, setSupplierType] = useState<'estate' | 'smallholder'>('estate');
   const [vehicleNumber, setVehicleNumber] = useState('');
@@ -10,10 +24,11 @@ const IntakeForm = () => {
   const [session, setSession] = useState<'AM' | 'PM'>('AM');
   const [remarks, setRemarks] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const netWeight = (parseFloat(grossWeight) || 0) - (parseFloat(tareWeight) || 0);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError('');
 
     const gross = parseFloat(grossWeight);
@@ -45,25 +60,44 @@ const IntakeForm = () => {
       return;
     }
 
-    // Success - clear form
-    console.log('Intake submitted:', {
+    const intakeData = {
       supplier,
-      supplierType,
+      supplierType: supplierType.toUpperCase(),
       vehicleNumber,
       grossWeight: gross,
       tareWeight: tare,
       netWeight: netWeight,
       quality,
       session,
-      remarks,
-    });
+      remarks: remarks || undefined,
+    };
 
-    setSupplier('');
-    setVehicleNumber('');
-    setGrossWeight('');
-    setTareWeight('');
-    setQuality('');
-    setRemarks('');
+    if (onSubmit) {
+      setIsSubmitting(true);
+      try {
+        await onSubmit(intakeData);
+        // Success - clear form
+        setSupplier('');
+        setVehicleNumber('');
+        setGrossWeight('');
+        setTareWeight('');
+        setQuality('');
+        setRemarks('');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to record intake');
+      } finally {
+        setIsSubmitting(false);
+      }
+    } else {
+      console.log('Intake submitted:', intakeData);
+      // Success - clear form
+      setSupplier('');
+      setVehicleNumber('');
+      setGrossWeight('');
+      setTareWeight('');
+      setQuality('');
+      setRemarks('');
+    }
   };
 
   return (
@@ -213,9 +247,10 @@ const IntakeForm = () => {
         <button
           type="button"
           onClick={handleSubmit}
-          className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-6 rounded-md transition-colors duration-200 shadow-sm"
+          disabled={isSubmitting}
+          className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-medium py-2.5 px-6 rounded-md transition-colors duration-200 shadow-sm"
         >
-          Record Intake
+          {isSubmitting ? 'Recording...' : 'Record Intake'}
         </button>
       </div>
     </div>

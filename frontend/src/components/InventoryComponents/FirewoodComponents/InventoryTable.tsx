@@ -2,7 +2,7 @@ interface Transaction {
   id: string;
   date: string;
   time: string;
-  type: 'inflow' | 'outflow';
+  type: string;
   quantity: number;
   factory?: string;
   supervisor?: string;
@@ -10,62 +10,11 @@ interface Transaction {
   runningBalance: number;
 }
 
-// Sample transaction data - replace with actual data from your API
-const sampleTransactions: Transaction[] = [
-  {
-    id: '1',
-    date: '2025-12-23',
-    time: '14:30',
-    type: 'outflow',
-    quantity: 45,
-    factory: 'Factory A',
-    supervisor: 'John Doe',
-    remarks: 'Daily production',
-    runningBalance: 1155,
-  },
-  {
-    id: '2',
-    date: '2025-12-23',
-    time: '10:15',
-    type: 'inflow',
-    quantity: 120,
-    remarks: 'Supplier delivery',
-    runningBalance: 1200,
-  },
-  {
-    id: '3',
-    date: '2025-12-22',
-    time: '16:45',
-    type: 'outflow',
-    quantity: 50,
-    factory: 'Factory B',
-    supervisor: 'Jane Smith',
-    remarks: 'Evening shift',
-    runningBalance: 1080,
-  },
-  {
-    id: '4',
-    date: '2025-12-22',
-    time: '09:00',
-    type: 'outflow',
-    quantity: 40,
-    factory: 'Factory A',
-    supervisor: 'John Doe',
-    remarks: 'Morning shift',
-    runningBalance: 1130,
-  },
-  {
-    id: '5',
-    date: '2025-12-21',
-    time: '11:30',
-    type: 'inflow',
-    quantity: 150,
-    remarks: 'Weekly stock replenishment',
-    runningBalance: 1170,
-  },
-];
+interface InventoryTableProps {
+  transactions?: Transaction[];
+}
 
-const InventoryTable = () => {
+const InventoryTable = ({ transactions = [] }: InventoryTableProps) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-300 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-300 bg-gray-50">
@@ -86,39 +35,47 @@ const InventoryTable = () => {
             </tr>
           </thead>
           <tbody className="text-sm">
-            {sampleTransactions.map((transaction, index) => (
-              <tr
-                key={transaction.id}
-                className={`hover:bg-gray-50 transition-colors ${
-                  index !== sampleTransactions.length - 1 ? 'border-b border-gray-200' : ''
-                }`}
-              >
-                <td className="px-4 py-3 text-gray-700">{transaction.date}</td>
-                <td className="px-4 py-3 text-gray-700">{transaction.time}</td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      transaction.type === 'inflow'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {transaction.type === 'inflow' ? '↑ Inflow' : '↓ Outflow'}
-                  </span>
-                </td>
-                <td className={`px-4 py-3 text-right font-medium ${
-                  transaction.type === 'inflow' ? 'text-green-600' : 'text-red-600'
-                }`}>
-                  {transaction.type === 'inflow' ? '+' : '-'}{transaction.quantity}
-                </td>
-                <td className="px-4 py-3 text-gray-700">{transaction.factory || '-'}</td>
-                <td className="px-4 py-3 text-gray-700">{transaction.supervisor || '-'}</td>
-                <td className="px-4 py-3 text-gray-600 text-xs">{transaction.remarks || '-'}</td>
-                <td className="px-4 py-3 text-right font-semibold text-gray-800">
-                  {transaction.runningBalance}
+            {transactions.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                  No transactions yet. Add your first transaction above.
                 </td>
               </tr>
-            ))}
+            ) : (
+              transactions.map((transaction, index) => (
+                <tr
+                  key={transaction.id}
+                  className={`hover:bg-gray-50 transition-colors ${
+                    index !== transactions.length - 1 ? 'border-b border-gray-200' : ''
+                  }`}
+                >
+                  <td className="px-4 py-3 text-gray-700">{transaction.date}</td>
+                  <td className="px-4 py-3 text-gray-700">{transaction.time}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        transaction.type.toLowerCase() === 'inflow'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
+                    >
+                      {transaction.type.toLowerCase() === 'inflow' ? '↑ Inflow' : '↓ Outflow'}
+                    </span>
+                  </td>
+                  <td className={`px-4 py-3 text-right font-medium ${
+                    transaction.type.toLowerCase() === 'inflow' ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {transaction.type.toLowerCase() === 'inflow' ? '+' : '-'}{transaction.quantity}
+                  </td>
+                  <td className="px-4 py-3 text-gray-700">{transaction.factory || '-'}</td>
+                  <td className="px-4 py-3 text-gray-700">{transaction.supervisor || '-'}</td>
+                  <td className="px-4 py-3 text-gray-600 text-xs">{transaction.remarks || '-'}</td>
+                  <td className="px-4 py-3 text-right font-semibold text-gray-800">
+                    {transaction.runningBalance}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

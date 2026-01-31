@@ -1,6 +1,16 @@
 import { useState } from 'react';
 
-const ProductionEntry = () => {
+interface ProductionEntryProps {
+  onSubmit?: (data: {
+    batchNumber: string;
+    greenLeafUsed: number;
+    grades: Record<string, number>;
+    totalOutput: number;
+    yieldPercentage: number;
+  }) => Promise<void>;
+}
+
+const ProductionEntry = ({ onSubmit }: ProductionEntryProps) => {
   const [batchNumber, setBatchNumber] = useState('');
   const [greenLeafUsed, setGreenLeafUsed] = useState('');
   const [grades, setGrades] = useState({
@@ -11,6 +21,7 @@ const ProductionEntry = () => {
     Others: '',
   });
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const totalOutput = Object.values(grades).reduce(
     (sum, val) => sum + (parseFloat(val) || 0),
@@ -25,7 +36,7 @@ const ProductionEntry = () => {
     setGrades({ ...grades, [grade]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError('');
 
     const leafUsed = parseFloat(greenLeafUsed);
@@ -44,18 +55,35 @@ const ProductionEntry = () => {
       return;
     }
 
-    // Success
-    console.log('Production submitted:', {
+    const productionData = {
       batchNumber,
       greenLeafUsed: leafUsed,
-      grades,
+      grades: Object.fromEntries(
+        Object.entries(grades).map(([k, v]) => [k, parseFloat(v) || 0])
+      ),
       totalOutput,
       yieldPercentage,
-    });
+    };
 
-    setBatchNumber('');
-    setGreenLeafUsed('');
-    setGrades({ BOP: '', FBOP: '', OP: '', Dust: '', Others: '' });
+    if (onSubmit) {
+      setIsSubmitting(true);
+      try {
+        await onSubmit(productionData);
+        // Success - clear form
+        setBatchNumber('');
+        setGreenLeafUsed('');
+        setGrades({ BOP: '', FBOP: '', OP: '', Dust: '', Others: '' });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to record production');
+      } finally {
+        setIsSubmitting(false);
+      }
+    } else {
+      console.log('Production submitted:', productionData);
+      setBatchNumber('');
+      setGreenLeafUsed('');
+      setGrades({ BOP: '', FBOP: '', OP: '', Dust: '', Others: '' });
+    }
   };
 
   return (
@@ -148,9 +176,10 @@ const ProductionEntry = () => {
         <button
           type="button"
           onClick={handleSubmit}
-          className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-6 rounded-md transition-colors duration-200 shadow-sm"
+          disabled={isSubmitting}
+          className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-medium py-2.5 px-6 rounded-md transition-colors duration-200 shadow-sm"
         >
-          Record Production
+          {isSubmitting ? 'Recording...' : 'Record Production'}
         </button>
       </div>
     </div>

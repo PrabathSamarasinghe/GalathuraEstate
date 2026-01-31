@@ -1,27 +1,38 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface TransactionFormProps {
   itemName: string;
   currentStock: number;
+  onSubmit?: (input: {
+    type: string;
+    quantity: number;
+    factory?: string;
+    supervisor?: string;
+    remarks?: string;
+    price?: number;
+  }) => Promise<{ success: boolean; error?: unknown }>;
 }
 
-const TransactionForm = ({ itemName, currentStock }: TransactionFormProps) => {
+const TransactionForm = ({ itemName, currentStock, onSubmit }: TransactionFormProps) => {
   // Inflow state
   const [inflowQuantity, setInflowQuantity] = useState('');
   const [inflowPrice, setInflowPrice] = useState('');
   const [inflowRemarks, setInflowRemarks] = useState('');
+  const [inflowLoading, setInflowLoading] = useState(false);
 
   // Outflow state
   const [outflowQuantity, setOutflowQuantity] = useState('');
   const [outflowFactory, setOutflowFactory] = useState('');
   const [outflowSupervisor, setOutflowSupervisor] = useState('');
   const [outflowRemarks, setOutflowRemarks] = useState('');
+  const [outflowLoading, setOutflowLoading] = useState(false);
 
   // Error states
   const [inflowError, setInflowError] = useState('');
   const [outflowError, setOutflowError] = useState('');
 
-  const handleInflowSubmit = () => {
+  const handleInflowSubmit = async () => {
     setInflowError('');
     
     const quantity = parseFloat(inflowQuantity);
@@ -37,14 +48,28 @@ const TransactionForm = ({ itemName, currentStock }: TransactionFormProps) => {
       return;
     }
 
-    // Success - clear form
-    console.log('Inflow submitted:', { quantity, price, remarks: inflowRemarks });
-    setInflowQuantity('');
-    setInflowPrice('');
-    setInflowRemarks('');
+    if (onSubmit) {
+      setInflowLoading(true);
+      const result = await onSubmit({
+        type: 'Inflow',
+        quantity,
+        price,
+        remarks: inflowRemarks || undefined,
+      });
+      setInflowLoading(false);
+
+      if (result.success) {
+        setInflowQuantity('');
+        setInflowPrice('');
+        setInflowRemarks('');
+        toast.success('Inflow transaction added successfully!');
+      } else {
+        setInflowError('Failed to add inflow transaction. Please try again.');
+      }
+    }
   };
 
-  const handleOutflowSubmit = () => {
+  const handleOutflowSubmit = async () => {
     setOutflowError('');
     
     const quantity = parseFloat(outflowQuantity);
@@ -67,17 +92,27 @@ const TransactionForm = ({ itemName, currentStock }: TransactionFormProps) => {
       return;
     }
 
-    // Success - clear form
-    console.log('Outflow submitted:', { 
-      quantity, 
-      factory: outflowFactory, 
-      supervisor: outflowSupervisor, 
-      remarks: outflowRemarks 
-    });
-    setOutflowQuantity('');
-    setOutflowFactory('');
-    setOutflowSupervisor('');
-    setOutflowRemarks('');
+    if (onSubmit) {
+      setOutflowLoading(true);
+      const result = await onSubmit({
+        type: 'Outflow',
+        quantity,
+        factory: outflowFactory,
+        supervisor: outflowSupervisor,
+        remarks: outflowRemarks || undefined,
+      });
+      setOutflowLoading(false);
+
+      if (result.success) {
+        setOutflowQuantity('');
+        setOutflowFactory('');
+        setOutflowSupervisor('');
+        setOutflowRemarks('');
+        toast.success('Outflow transaction added successfully!');
+      } else {
+        setOutflowError('Failed to add outflow transaction. Please try again.');
+      }
+    }
   };
 
   return (
@@ -147,9 +182,10 @@ const TransactionForm = ({ itemName, currentStock }: TransactionFormProps) => {
           <button
             type="button"
             onClick={handleInflowSubmit}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-6 rounded-md transition-colors duration-200 shadow-sm"
+            disabled={inflowLoading}
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-6 rounded-md transition-colors duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Add Inflow
+            {inflowLoading ? 'Adding...' : 'Add Inflow'}
           </button>
         </div>
         </div>
@@ -229,9 +265,10 @@ const TransactionForm = ({ itemName, currentStock }: TransactionFormProps) => {
           <button
             type="button"
             onClick={handleOutflowSubmit}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-6 rounded-md transition-colors duration-200 shadow-sm"
+            disabled={outflowLoading}
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-6 rounded-md transition-colors duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Add Outflow
+            {outflowLoading ? 'Adding...' : 'Add Outflow'}
           </button>
         </div>
         </div>

@@ -1,62 +1,72 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import type { Employee, EmployeeFormData } from "../utils/Interfaces";
 import { EmployeeStatus } from "../utils/enums";
 import EmployeeForm from "../components/EmployeeComponents/EmployeeForm";
 import EmployeeTable from "../components/EmployeeComponents/EmployeeTable";
 import ViewEmployeeModal from "../components/EmployeeComponents/ViewEmployeeModal";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_EMPLOYEES, CREATE_EMPLOYEE, UPDATE_EMPLOYEE, DELETE_EMPLOYEE } from "../graphql/queries";
+import Loading from "../components/Loading";
+import { toGraphQLEnum, fromGraphQLEnum } from "../utils/enumMappings";
 
 const Employees = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | undefined>();
   const [viewingEmployee, setViewingEmployee] = useState<Employee | undefined>();
 
-  // Load employees from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem("galathura_employees");
-    if (stored) {
-      try {
-        setEmployees(JSON.parse(stored));
-      } catch (error) {
-        console.error("Error loading employees:", error);
+  // GraphQL queries and mutations
+  const { data, loading, error, refetch } = useQuery(GET_EMPLOYEES, {
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const [createEmployee] = useMutation(CREATE_EMPLOYEE, {
+    onCompleted: () => refetch(),
+  });
+
+  const [updateEmployee] = useMutation(UPDATE_EMPLOYEE, {
+    onCompleted: () => refetch(),
+  });
+
+  const [_deleteEmployee] = useMutation(DELETE_EMPLOYEE, {
+    onCompleted: () => refetch(),
+  });
+
+  const employees: Employee[] = (data?.employees || []).map((emp: Employee) => ({
+    ...emp,
+    designation: fromGraphQLEnum.designation(emp.designation),
+    employmentType: fromGraphQLEnum.employmentType(emp.employmentType),
+    payType: fromGraphQLEnum.payType(emp.payType),
+  }));
+
+  const handleSubmit = async (formData: EmployeeFormData) => {
+    const input = {
+      fullName: formData.fullName,
+      nicNumber: formData.nicNumber,
+      contactNumber: formData.contactNumber,
+      address: formData.address,
+      department: toGraphQLEnum.department(formData.department),
+      designation: toGraphQLEnum.designation(formData.designation),
+      employmentType: toGraphQLEnum.employmentType(formData.employmentType),
+      joinDate: formData.joinDate,
+      status: toGraphQLEnum.status(formData.status),
+      payType: toGraphQLEnum.payType(formData.payType),
+      rate: formData.rate,
+      otRate: formData.otRate,
+    };
+
+    try {
+      if (editingEmployee) {
+        await updateEmployee({ variables: { id: editingEmployee.id, input } });
+      } else {
+        await createEmployee({ variables: { input } });
       }
+      handleCloseForm();
+    } catch (err) {
+      console.error("Error saving employee:", err);
+      toast.error("Failed to save employee. Please try again.");
     }
-  }, []);
-
-  // Save employees to localStorage whenever they change
-  useEffect(() => {
-    if (employees.length > 0 || localStorage.getItem("galathura_employees")) {
-      localStorage.setItem("galathura_employees", JSON.stringify(employees));
-    }
-  }, [employees]);
-
-  // Generate employee ID
-  const generateEmployeeId = (): string => {
-    const prefix = "EMP";
-    const year = new Date().getFullYear().toString().slice(-2);
-    const count = employees.length + 1;
-    const id = `${prefix}${year}${count.toString().padStart(4, "0")}`;
-    return id;
-  };
-
-  const handleSubmit = (data: EmployeeFormData) => {
-    if (editingEmployee) {
-      // Update existing employee
-      setEmployees((prev) =>
-        prev.map((emp) =>
-          emp.id === editingEmployee.id ? { ...data, id: editingEmployee.id } : emp
-        )
-      );
-    } else {
-      // Add new employee
-      const newEmployee: Employee = {
-        ...data,
-        id: generateEmployeeId(),
-      };
-      setEmployees((prev) => [...prev, newEmployee]);
-    }
-    handleCloseForm();
   };
 
   const handleEdit = (employee: Employee) => {
@@ -68,13 +78,19 @@ const Employees = () => {
     setViewingEmployee(employee);
   };
 
-  const handleDeactivate = (employeeId: string) => {
+  const handleDeactivate = async (employeeId: string) => {
     if (window.confirm("Are you sure you want to deactivate this employee?")) {
-      setEmployees((prev) =>
-        prev.map((emp) =>
-          emp.id === employeeId ? { ...emp, status: EmployeeStatus.INACTIVE } : emp
-        )
-      );
+      try {
+        await updateEmployee({
+          variables: {
+            id: employeeId,
+            input: { status: EmployeeStatus.INACTIVE }
+          }
+        });
+      } catch (err) {
+        console.error("Error deactivating employee:", err);
+        toast.error("Failed to deactivate employee.");
+      }
     }
   };
 
@@ -87,6 +103,21 @@ const Employees = () => {
     setEditingEmployee(undefined);
     setShowForm(true);
   };
+
+  if (loading && !data) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600">Error loading employees: {error.message}</p>
+        <button onClick={() => refetch()} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -1,7 +1,14 @@
 import routeConfig from "../config/routes.json";
 import { Link } from "react-router-dom";
+import { logout } from "../hooks/useAuth";
 
 const Sidebar = () => {
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      logout();
+    }
+  };
+
   return (
     <div className="w-64 h-screen bg-green-100 border-r border-green-200 shadow-lg p-6 fixed flex flex-col">
       <div className="mb-8 text-center py-4 bg-gradient-to-r from-green-600 to-emerald-700 rounded-xl shadow-md">
@@ -28,7 +35,7 @@ const Sidebar = () => {
 
       <div className="mt-4">
         <button
-          onClick={() => console.log("Logout clicked")}
+          onClick={handleLogout}
           className="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition text-center"
         >
           Logout

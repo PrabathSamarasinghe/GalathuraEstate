@@ -5,9 +5,17 @@ interface DispatchFormProps {
     grade: string;
     quantity: number;
   }[];
+  onSubmit?: (data: {
+    grade: string;
+    quantity: number;
+    buyer: string;
+    invoiceNumber: string;
+    packingType: string;
+    remarks?: string;
+  }) => Promise<void>;
 }
 
-const DispatchForm = ({ gradeStocks }: DispatchFormProps) => {
+const DispatchForm = ({ gradeStocks, onSubmit }: DispatchFormProps) => {
   const [grade, setGrade] = useState('');
   const [quantity, setQuantity] = useState('');
   const [buyer, setBuyer] = useState('');
@@ -15,10 +23,11 @@ const DispatchForm = ({ gradeStocks }: DispatchFormProps) => {
   const [packingType, setPackingType] = useState('');
   const [remarks, setRemarks] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const availableStock = gradeStocks.find((g) => g.grade === grade)?.quantity || 0;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError('');
 
     const qty = parseFloat(quantity);
@@ -49,22 +58,40 @@ const DispatchForm = ({ gradeStocks }: DispatchFormProps) => {
       return;
     }
 
-    // Success
-    console.log('Dispatch submitted:', {
+    const dispatchData = {
       grade,
       quantity: qty,
       buyer,
       invoiceNumber,
       packingType,
-      remarks,
-    });
+      remarks: remarks || undefined,
+    };
 
-    setGrade('');
-    setQuantity('');
-    setBuyer('');
-    setInvoiceNumber('');
-    setPackingType('');
-    setRemarks('');
+    if (onSubmit) {
+      setIsSubmitting(true);
+      try {
+        await onSubmit(dispatchData);
+        // Success - clear form
+        setGrade('');
+        setQuantity('');
+        setBuyer('');
+        setInvoiceNumber('');
+        setPackingType('');
+        setRemarks('');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to record dispatch');
+      } finally {
+        setIsSubmitting(false);
+      }
+    } else {
+      console.log('Dispatch submitted:', dispatchData);
+      setGrade('');
+      setQuantity('');
+      setBuyer('');
+      setInvoiceNumber('');
+      setPackingType('');
+      setRemarks('');
+    }
   };
 
   return (
@@ -189,9 +216,10 @@ const DispatchForm = ({ gradeStocks }: DispatchFormProps) => {
         <button
           type="button"
           onClick={handleSubmit}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-md transition-colors duration-200 shadow-sm"
+          disabled={isSubmitting}
+          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2.5 px-6 rounded-md transition-colors duration-200 shadow-sm"
         >
-          Record Dispatch
+          {isSubmitting ? 'Recording...' : 'Record Dispatch'}
         </button>
       </div>
     </div>

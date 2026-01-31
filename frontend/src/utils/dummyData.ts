@@ -1,4 +1,4 @@
-import type { Employee, AttendanceRecord } from "./Interfaces";
+import type { Employee, AttendanceRecord, Transaction } from "./Interfaces";
 import {
   Department,
   Designation,
@@ -7,6 +7,10 @@ import {
   PayType,
   Shift,
   AttendanceStatus,
+  TransactionType,
+  ExpenseCategory,
+  IncomeCategory,
+  PaymentType,
 } from "./enums";
 
 // Dummy Employees Data
@@ -412,6 +416,224 @@ export const generateDummyAttendance = (): AttendanceRecord[] => {
   return records;
 };
 
+// Generate dummy transactions for last 3 months
+const generateDummyTransactions = (): Transaction[] => {
+  const transactions: Transaction[] = [];
+  const today = new Date();
+  const threeMonthsAgo = new Date(today);
+  threeMonthsAgo.setMonth(today.getMonth() - 3);
+
+  let transactionCounter = 1;
+
+  // Generate transactions for each day in the past 3 months
+  for (let d = new Date(threeMonthsAgo); d <= today; d.setDate(d.getDate() + 1)) {
+    const dateString = new Date(d).toISOString().split("T")[0];
+    const dayOfMonth = new Date(d).getDate();
+
+    // INCOME TRANSACTIONS
+    // Made Tea Sales (3-4 times per week)
+    if (d.getDay() === 1 || d.getDay() === 3 || d.getDay() === 5) {
+      transactions.push({
+        id: `TXN${String(transactionCounter++).padStart(6, "0")}`,
+        date: dateString,
+        type: TransactionType.INCOME,
+        category: IncomeCategory.MADE_TEA_SALES,
+        description: `Made tea sales - Batch ${Math.floor(Math.random() * 100) + 1}`,
+        amount: Math.floor(Math.random() * 200000) + 800000, // 800k - 1M per sale
+        paymentType: Math.random() > 0.3 ? PaymentType.BANK : PaymentType.CREDIT,
+        referenceNo: `INV-${dateString.replace(/-/g, "")}-${Math.floor(Math.random() * 999) + 1}`,
+        createdAt: new Date(d).toISOString(),
+      });
+    }
+
+    // Other Income (occasional)
+    if (Math.random() > 0.9) {
+      const otherIncomes = [
+        "Sale of tea waste",
+        "Rental income from equipment",
+        "Consulting services",
+        "Sale of old machinery",
+      ];
+      transactions.push({
+        id: `TXN${String(transactionCounter++).padStart(6, "0")}`,
+        date: dateString,
+        type: TransactionType.INCOME,
+        category: IncomeCategory.OTHER_INCOME,
+        description: otherIncomes[Math.floor(Math.random() * otherIncomes.length)],
+        amount: Math.floor(Math.random() * 50000) + 10000,
+        paymentType: PaymentType.BANK,
+        createdAt: new Date(d).toISOString(),
+      });
+    }
+
+    // EXPENSE TRANSACTIONS
+    // Green Leaf Cost (daily purchases)
+    if (Math.random() > 0.2) {
+      transactions.push({
+        id: `TXN${String(transactionCounter++).padStart(6, "0")}`,
+        date: dateString,
+        type: TransactionType.EXPENSE,
+        category: ExpenseCategory.GREEN_LEAF_COST,
+        description: `Green leaf purchase - ${Math.floor(Math.random() * 500) + 200} kg`,
+        amount: Math.floor(Math.random() * 150000) + 50000,
+        paymentType: Math.random() > 0.5 ? PaymentType.CASH : PaymentType.BANK,
+        createdAt: new Date(d).toISOString(),
+      });
+    }
+
+    // Labor Cost (weekly payroll)
+    if (d.getDay() === 5) {
+      // Every Friday
+      transactions.push({
+        id: `TXN${String(transactionCounter++).padStart(6, "0")}`,
+        date: dateString,
+        type: TransactionType.EXPENSE,
+        category: ExpenseCategory.LABOR_COST,
+        description: `Weekly payroll - Week ${Math.ceil(dayOfMonth / 7)}`,
+        amount: Math.floor(Math.random() * 100000) + 200000,
+        paymentType: PaymentType.BANK,
+        referenceNo: `PAY-${dateString.replace(/-/g, "")}`,
+        createdAt: new Date(d).toISOString(),
+      });
+    }
+
+    // Fuel & Power (every 2-3 days)
+    if (Math.random() > 0.6) {
+      const fuelTypes = ["Diesel for generator", "Electricity bill payment", "Firewood purchase", "Coal purchase"];
+      transactions.push({
+        id: `TXN${String(transactionCounter++).padStart(6, "0")}`,
+        date: dateString,
+        type: TransactionType.EXPENSE,
+        category: ExpenseCategory.FUEL_POWER,
+        description: fuelTypes[Math.floor(Math.random() * fuelTypes.length)],
+        amount: Math.floor(Math.random() * 80000) + 20000,
+        paymentType: Math.random() > 0.7 ? PaymentType.CASH : PaymentType.BANK,
+        createdAt: new Date(d).toISOString(),
+      });
+    }
+
+    // Packing Materials (weekly)
+    if (d.getDay() === 2) {
+      // Every Tuesday
+      const packingItems = [
+        "Cardboard boxes - 500 units",
+        "Tea bags - 10,000 units",
+        "Labels and stickers",
+        "Plastic wrapping rolls",
+      ];
+      transactions.push({
+        id: `TXN${String(transactionCounter++).padStart(6, "0")}`,
+        date: dateString,
+        type: TransactionType.EXPENSE,
+        category: ExpenseCategory.PACKING_MATERIALS,
+        description: packingItems[Math.floor(Math.random() * packingItems.length)],
+        amount: Math.floor(Math.random() * 60000) + 30000,
+        paymentType: PaymentType.BANK,
+        createdAt: new Date(d).toISOString(),
+      });
+    }
+
+    // Factory Overheads (various)
+    if (Math.random() > 0.85) {
+      const overheads = [
+        "Water bill payment",
+        "Cleaning supplies",
+        "Safety equipment",
+        "Factory supplies",
+        "Waste disposal",
+      ];
+      transactions.push({
+        id: `TXN${String(transactionCounter++).padStart(6, "0")}`,
+        date: dateString,
+        type: TransactionType.EXPENSE,
+        category: ExpenseCategory.FACTORY_OVERHEADS,
+        description: overheads[Math.floor(Math.random() * overheads.length)],
+        amount: Math.floor(Math.random() * 30000) + 5000,
+        paymentType: Math.random() > 0.5 ? PaymentType.CASH : PaymentType.BANK,
+        createdAt: new Date(d).toISOString(),
+      });
+    }
+
+    // Maintenance & Repairs (occasional)
+    if (Math.random() > 0.9) {
+      const maintenance = [
+        "Machine servicing - Rolling unit",
+        "Dryer repair",
+        "Building maintenance",
+        "Equipment calibration",
+        "Plumbing repairs",
+      ];
+      transactions.push({
+        id: `TXN${String(transactionCounter++).padStart(6, "0")}`,
+        date: dateString,
+        type: TransactionType.EXPENSE,
+        category: ExpenseCategory.MAINTENANCE_REPAIRS,
+        description: maintenance[Math.floor(Math.random() * maintenance.length)],
+        amount: Math.floor(Math.random() * 80000) + 20000,
+        paymentType: PaymentType.BANK,
+        createdAt: new Date(d).toISOString(),
+      });
+    }
+
+    // Administrative (monthly on 5th)
+    if (dayOfMonth === 5) {
+      const adminExpenses = [
+        { desc: "Office supplies", amount: Math.floor(Math.random() * 20000) + 10000 },
+        { desc: "Telephone & internet", amount: Math.floor(Math.random() * 15000) + 8000 },
+        { desc: "Insurance premium", amount: Math.floor(Math.random() * 40000) + 30000 },
+      ];
+      adminExpenses.forEach((exp) => {
+        transactions.push({
+          id: `TXN${String(transactionCounter++).padStart(6, "0")}`,
+          date: dateString,
+          type: TransactionType.EXPENSE,
+          category: ExpenseCategory.ADMINISTRATIVE,
+          description: exp.desc,
+          amount: exp.amount,
+          paymentType: PaymentType.BANK,
+          createdAt: new Date(d).toISOString(),
+        });
+      });
+    }
+
+    // Transport & Handling (2-3 times per week)
+    if (d.getDay() === 2 || d.getDay() === 4 || d.getDay() === 6) {
+      const transport = [
+        "Delivery charges - Made tea",
+        "Vehicle fuel",
+        "Transportation of green leaf",
+        "Logistics charges",
+      ];
+      transactions.push({
+        id: `TXN${String(transactionCounter++).padStart(6, "0")}`,
+        date: dateString,
+        type: TransactionType.EXPENSE,
+        category: ExpenseCategory.TRANSPORT_HANDLING,
+        description: transport[Math.floor(Math.random() * transport.length)],
+        amount: Math.floor(Math.random() * 40000) + 15000,
+        paymentType: Math.random() > 0.6 ? PaymentType.CASH : PaymentType.BANK,
+        createdAt: new Date(d).toISOString(),
+      });
+    }
+
+    // Financial Expenses (monthly on 1st)
+    if (dayOfMonth === 1) {
+      transactions.push({
+        id: `TXN${String(transactionCounter++).padStart(6, "0")}`,
+        date: dateString,
+        type: TransactionType.EXPENSE,
+        category: ExpenseCategory.FINANCIAL,
+        description: "Bank charges and loan interest",
+        amount: Math.floor(Math.random() * 30000) + 15000,
+        paymentType: PaymentType.BANK,
+        createdAt: new Date(d).toISOString(),
+      });
+    }
+  }
+
+  return transactions;
+};
+
 // Function to load dummy data into localStorage
 export const loadDummyData = () => {
   try {
@@ -424,6 +646,11 @@ export const loadDummyData = () => {
     localStorage.setItem("galathura_attendance", JSON.stringify(attendanceRecords));
     console.log(`✅ Loaded ${attendanceRecords.length} dummy attendance records (last 7 days)`);
 
+    // Load transactions
+    const transactions = generateDummyTransactions();
+    localStorage.setItem("galathura_transactions", JSON.stringify(transactions));
+    console.log(`✅ Loaded ${transactions.length} dummy transactions (last 3 months)`);
+
     // Force reload the page to reflect changes
     window.location.reload();
   } catch (error) {
@@ -431,7 +658,8 @@ export const loadDummyData = () => {
   }
 };
 
-// Function to clear all data
+// FlocalStorage.removeItem("galathura_transactions");
+   
 export const clearAllData = () => {
   if (window.confirm("Are you sure you want to clear all data? This cannot be undone.")) {
     localStorage.removeItem("galathura_employees");

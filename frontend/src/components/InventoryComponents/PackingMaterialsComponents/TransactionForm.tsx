@@ -1,16 +1,27 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface TransactionFormProps {
   itemName: string;
   currentStock: number;
+  onSubmit?: (input: {
+    type: string;
+    quantity: number;
+    materialType?: string;
+    factory?: string;
+    supervisor?: string;
+    remarks?: string;
+    price?: number;
+  }) => Promise<{ success: boolean; error?: unknown }>;
 }
 
-const TransactionForm = ({ itemName, currentStock }: TransactionFormProps) => {
+const TransactionForm = ({ itemName, currentStock, onSubmit }: TransactionFormProps) => {
   // Inflow state
   const [inflowQuantity, setInflowQuantity] = useState('');
   const [inflowMaterialType, setInflowMaterialType] = useState('');
   const [inflowPrice, setInflowPrice] = useState('');
   const [inflowRemarks, setInflowRemarks] = useState('');
+  const [inflowLoading, setInflowLoading] = useState(false);
 
   // Outflow state
   const [outflowQuantity, setOutflowQuantity] = useState('');
@@ -18,12 +29,13 @@ const TransactionForm = ({ itemName, currentStock }: TransactionFormProps) => {
   const [outflowFactory, setOutflowFactory] = useState('');
   const [outflowSupervisor, setOutflowSupervisor] = useState('');
   const [outflowRemarks, setOutflowRemarks] = useState('');
+  const [outflowLoading, setOutflowLoading] = useState(false);
 
   // Error states
   const [inflowError, setInflowError] = useState('');
   const [outflowError, setOutflowError] = useState('');
 
-  const handleInflowSubmit = () => {
+  const handleInflowSubmit = async () => {
     setInflowError('');
     
     const quantity = parseFloat(inflowQuantity);
@@ -43,15 +55,30 @@ const TransactionForm = ({ itemName, currentStock }: TransactionFormProps) => {
       return;
     }
 
-    // Success - clear form
-    console.log('Inflow submitted:', { quantity, materialType: inflowMaterialType, price, remarks: inflowRemarks });
-    setInflowQuantity('');
-    setInflowMaterialType('');
-    setInflowPrice('');
-    setInflowRemarks('');
+    if (onSubmit) {
+      setInflowLoading(true);
+      const result = await onSubmit({
+        type: 'Inflow',
+        quantity,
+        materialType: inflowMaterialType,
+        price,
+        remarks: inflowRemarks || undefined,
+      });
+      setInflowLoading(false);
+
+      if (result.success) {
+        setInflowQuantity('');
+        setInflowMaterialType('');
+        setInflowPrice('');
+        setInflowRemarks('');
+        toast.success('Inflow transaction added successfully!');
+      } else {
+        setInflowError('Failed to add inflow transaction. Please try again.');
+      }
+    }
   };
 
-  const handleOutflowSubmit = () => {
+  const handleOutflowSubmit = async () => {
     setOutflowError('');
     
     const quantity = parseFloat(outflowQuantity);
@@ -78,19 +105,29 @@ const TransactionForm = ({ itemName, currentStock }: TransactionFormProps) => {
       return;
     }
 
-    // Success - clear form
-    console.log('Outflow submitted:', { 
-      quantity, 
-      materialType: outflowMaterialType,
-      factory: outflowFactory, 
-      supervisor: outflowSupervisor, 
-      remarks: outflowRemarks 
-    });
-    setOutflowQuantity('');
-    setOutflowMaterialType('');
-    setOutflowFactory('');
-    setOutflowSupervisor('');
-    setOutflowRemarks('');
+    if (onSubmit) {
+      setOutflowLoading(true);
+      const result = await onSubmit({
+        type: 'Outflow',
+        quantity,
+        materialType: outflowMaterialType,
+        factory: outflowFactory,
+        supervisor: outflowSupervisor,
+        remarks: outflowRemarks || undefined,
+      });
+      setOutflowLoading(false);
+
+      if (result.success) {
+        setOutflowQuantity('');
+        setOutflowMaterialType('');
+        setOutflowFactory('');
+        setOutflowSupervisor('');
+        setOutflowRemarks('');
+        toast.success('Outflow transaction added successfully!');
+      } else {
+        setOutflowError('Failed to add outflow transaction. Please try again.');
+      }
+    }
   };
 
   return (

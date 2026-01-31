@@ -1,5 +1,6 @@
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
+import toast from "react-hot-toast";
 import type {
   Employee,
   AttendanceRecord,
@@ -10,46 +11,83 @@ import { AttendanceStatus, PayType, EmployeeStatus } from "../utils/enums";
 import BulkAttendanceEntry from "../components/AttendanceComponents/BulkAttendanceEntry";
 import AttendanceSummaryCard from "../components/AttendanceComponents/AttendanceSummaryCard";
 import AttendanceTable from "../components/AttendanceComponents/AttendanceTable";
+import { useMutation, useQuery } from "@apollo/client";
+import { 
+  GET_EMPLOYEES, 
+  GET_ATTENDANCE_RECORDS, 
+  GET_ATTENDANCE_SUMMARY,
+  CREATE_BULK_ATTENDANCE,
+  UPDATE_ATTENDANCE,
+  DELETE_ATTENDANCE 
+} from "../graphql/queries";
+import Loading from "../components/Loading";
+import { toGraphQLEnum, fromGraphQLEnum } from "../utils/enumMappings";
 
 const Attendance = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
   const [view, setView] = useState<"entry" | "records">("entry");
-  const [editingRecord, setEditingRecord] = useState<AttendanceRecord | undefined>();
+  const [, setEditingRecord] = useState<AttendanceRecord | undefined>();
 
-  // Load employees from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem("galathura_employees");
-    if (stored) {
-      try {
-        setEmployees(JSON.parse(stored));
-      } catch (error) {
-        console.error("Error loading employees:", error);
-      }
-    }
-  }, []);
+  // GraphQL queries
+  const { data: employeesData, loading: employeesLoading } = useQuery(GET_EMPLOYEES, {
+    fetchPolicy: 'cache-and-network',
+  });
 
-  // Load attendance records from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem("galathura_attendance");
-    if (stored) {
-      try {
-        setAttendanceRecords(JSON.parse(stored));
-      } catch (error) {
-        console.error("Error loading attendance records:", error);
-      }
-    }
-  }, []);
+  const { data: attendanceData, loading: attendanceLoading, refetch: refetchAttendance } = useQuery(GET_ATTENDANCE_RECORDS, {
+    fetchPolicy: 'cache-and-network',
+  });
 
-  // Save attendance records to localStorage
-  useEffect(() => {
-    if (attendanceRecords.length > 0 || localStorage.getItem("galathura_attendance")) {
-      localStorage.setItem("galathura_attendance", JSON.stringify(attendanceRecords));
-    }
-  }, [attendanceRecords]);
+  const { data: summaryData, refetch: refetchSummary } = useQuery(GET_ATTENDANCE_SUMMARY, {
+    variables: { date: selectedDate },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  // GraphQL mutations
+  const [createBulkAttendance] = useMutation(CREATE_BULK_ATTENDANCE, {
+    onCompleted: () => {
+      refetchAttendance();
+      refetchSummary();
+    },
+  });
+
+  const [_updateAttendance] = useMutation(UPDATE_ATTENDANCE, {
+    onCompleted: () => {
+      refetchAttendance();
+      refetchSummary();
+    },
+  });
+
+  const [deleteAttendance] = useMutation(DELETE_ATTENDANCE, {
+    onCompleted: () => {
+      refetchAttendance();
+      refetchSummary();
+    },
+  });
+
+  // Map employees from GraphQL
+  const employees: Employee[] = (employeesData?.employees || []).map((emp: Employee) => ({
+    ...emp,
+    designation: fromGraphQLEnum.designation(emp.designation),
+    employmentType: fromGraphQLEnum.employmentType(emp.employmentType),
+    payType: fromGraphQLEnum.payType(emp.payType),
+  }));
+
+  // Map attendance records from GraphQL
+  const attendanceRecords: AttendanceRecord[] = (attendanceData?.attendanceRecords || []).map((record: AttendanceRecord & { employee?: Employee }) => ({
+    id: record.id,
+    employeeId: record.employeeId,
+    employeeName: record.employee?.fullName || '',
+    department: record.employee?.department || '',
+    date: record.date,
+    shift: fromGraphQLEnum.shift(record.shift),
+    status: fromGraphQLEnum.attendanceStatus(record.status),
+    otHours: record.otHours,
+    calculatedWage: record.calculatedWage,
+    remarks: record.remarks,
+    markedAt: record.markedAt,
+  }));
 
   // Calculate wage for an employee based on attendance
   const calculateWage = (
@@ -97,7 +135,7 @@ const Attendance = () => {
           employeeId: record.employeeId,
           date: record.date,
           shift: record.shift,
-          status: record.status,
+          status: record.status as AttendanceStatus,
           otHours: record.otHours,
           remarks: record.remarks,
         });
@@ -105,8 +143,14 @@ const Attendance = () => {
     return map;
   }, [attendanceRecords, selectedDate]);
 
-  // Calculate summary for selected date
+  // Use summary from GraphQL or calculate from local data
   const dailySummary: AttendanceSummary = useMemo(() => {
+    // If GraphQL summary is available, use it
+    if (summaryData?.attendanceSummary) {
+      return summaryData.attendanceSummary;
+    }
+
+    // Otherwise calculate from local records (fallback)
     const dateRecords = attendanceRecords.filter(
       (record) => record.date === selectedDate
     );
@@ -145,65 +189,41 @@ const Attendance = () => {
       totalManDays,
       totalOTHours,
     };
-  }, [attendanceRecords, selectedDate, employees]);
-
-  // Generate attendance record ID
-  const generateRecordId = (): string => {
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    return `ATT${timestamp}${random}`;
-  };
+  }, [summaryData, attendanceRecords, selectedDate, employees]);
 
   // Handle bulk attendance submission
-  const handleBulkSubmit = (formRecords: AttendanceFormData[]) => {
-    const newRecords: AttendanceRecord[] = [];
-
-    formRecords.forEach((formData) => {
-      const employee = employees.find((emp) => emp.id === formData.employeeId);
-      if (!employee) return;
-
-      // Check if record already exists
-      const existingIndex = attendanceRecords.findIndex(
-        (record) =>
-          record.employeeId === formData.employeeId && record.date === formData.date
-      );
-
-      const calculatedWage = calculateWage(
-        employee,
-        formData.status,
-        formData.otHours
-      );
-
-      const record: AttendanceRecord = {
-        id: existingIndex >= 0 ? attendanceRecords[existingIndex].id : generateRecordId(),
-        employeeId: employee.id,
-        employeeName: employee.fullName,
-        department: employee.department,
-        date: formData.date,
-        shift: formData.shift,
-        status: formData.status,
-        otHours: formData.otHours,
-        calculatedWage,
-        remarks: formData.remarks,
-        markedAt: new Date().toISOString(),
-      };
-
-      if (existingIndex >= 0) {
-        // Update existing record
-        attendanceRecords[existingIndex] = record;
-      } else {
-        newRecords.push(record);
+  const handleBulkSubmit = async (formRecords: AttendanceFormData[]) => {
+    try {
+      // Get shift from first record (all records should have the same date/shift)
+      const firstRecord = formRecords[0];
+      if (!firstRecord) {
+        toast.error("No attendance records to save.");
+        return;
       }
-    });
 
-    if (newRecords.length > 0) {
-      setAttendanceRecords((prev) => [...prev, ...newRecords]);
-    } else {
-      // Trigger re-render for updates
-      setAttendanceRecords([...attendanceRecords]);
+      // Convert form records to GraphQL input format with enum mappings
+      const records = formRecords.map((formData) => ({
+        employeeId: formData.employeeId,
+        status: toGraphQLEnum.attendanceStatus(formData.status),
+        otHours: formData.otHours,
+        remarks: formData.remarks,
+      }));
+
+      await createBulkAttendance({
+        variables: {
+          input: {
+            date: firstRecord.date,
+            shift: toGraphQLEnum.shift(firstRecord.shift),
+            records,
+          },
+        },
+      });
+
+      toast.success(`Attendance saved successfully for ${formRecords.length} employees!`);
+    } catch (err) {
+      console.error("Error saving attendance:", err);
+      toast.error("Failed to save attendance. Please try again.");
     }
-
-    alert(`Attendance saved successfully for ${formRecords.length} employees!`);
   };
 
   // Handle edit record
@@ -214,13 +234,27 @@ const Attendance = () => {
   };
 
   // Handle delete record
-  const handleDelete = (recordId: string) => {
-    setAttendanceRecords((prev) => prev.filter((record) => record.id !== recordId));
+  const handleDelete = async (recordId: string) => {
+    if (window.confirm("Are you sure you want to delete this attendance record?")) {
+      try {
+        await deleteAttendance({ variables: { id: recordId } });
+      } catch (err) {
+        console.error("Error deleting attendance:", err);
+        toast.error("Failed to delete attendance record.");
+      }
+    }
   };
 
   const activeEmployees = employees.filter(
     (emp) => emp.status === EmployeeStatus.ACTIVE
   );
+
+  // Loading state
+  const isLoading = employeesLoading || attendanceLoading;
+
+  if (isLoading && !employeesData && !attendanceData) {
+    return <Loading />;
+  }
 
   return (
     <div className="space-y-6">

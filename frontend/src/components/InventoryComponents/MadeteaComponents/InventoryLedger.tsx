@@ -3,7 +3,7 @@ interface Transaction {
   date: string;
   time: string;
   reference: string;
-  type: 'production' | 'dispatch';
+  type: string;
   inflow: number;
   outflow: number;
   balance: number;
@@ -11,70 +11,11 @@ interface Transaction {
   details?: string;
 }
 
-const sampleTransactions: Transaction[] = [
-  {
-    id: '1',
-    date: '2025-12-23',
-    time: '15:00',
-    reference: 'DISP-231223-003',
-    type: 'dispatch',
-    inflow: 0,
-    outflow: 350,
-    balance: 8650,
-    grade: 'BOP',
-    details: 'Auction Lot #456',
-  },
-  {
-    id: '2',
-    date: '2025-12-23',
-    time: '14:00',
-    reference: 'BATCH-231223-002',
-    type: 'production',
-    inflow: 450,
-    outflow: 0,
-    balance: 9000,
-    grade: 'Mixed',
-    details: 'Daily production',
-  },
-  {
-    id: '3',
-    date: '2025-12-23',
-    time: '10:30',
-    reference: 'DISP-231223-002',
-    type: 'dispatch',
-    inflow: 0,
-    outflow: 200,
-    balance: 8550,
-    grade: 'FBOP',
-    details: 'Broker - ABC Ltd',
-  },
-  {
-    id: '4',
-    date: '2025-12-23',
-    time: '08:00',
-    reference: 'BATCH-231223-001',
-    type: 'production',
-    inflow: 520,
-    outflow: 0,
-    balance: 8750,
-    grade: 'Mixed',
-    details: 'Morning batch',
-  },
-  {
-    id: '5',
-    date: '2025-12-22',
-    time: '16:30',
-    reference: 'DISP-221223-001',
-    type: 'dispatch',
-    inflow: 0,
-    outflow: 400,
-    balance: 8230,
-    grade: 'OP',
-    details: 'Auction Lot #455',
-  },
-];
+interface InventoryLedgerProps {
+  transactions?: Transaction[];
+}
 
-const InventoryLedger = () => {
+const InventoryLedger = ({ transactions = [] }: InventoryLedgerProps) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-300 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-300 bg-gray-50 flex justify-between items-center">
@@ -113,44 +54,52 @@ const InventoryLedger = () => {
             </tr>
           </thead>
           <tbody className="text-sm">
-            {sampleTransactions.map((transaction, index) => (
-              <tr
-                key={transaction.id}
-                className={`hover:bg-gray-50 transition-colors ${
-                  index !== sampleTransactions.length - 1 ? 'border-b border-gray-200' : ''
-                }`}
-              >
-                <td className="px-4 py-3 text-gray-700">{transaction.date}</td>
-                <td className="px-4 py-3 text-gray-700">{transaction.time}</td>
-                <td className="px-4 py-3 text-gray-700 font-mono text-xs">{transaction.reference}</td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      transaction.type === 'production'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-blue-100 text-blue-800'
-                    }`}
-                  >
-                    {transaction.type === 'production' ? '↑ Production' : '↓ Dispatch'}
-                  </span>
+            {transactions.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
+                  No transactions yet. Record production or dispatch above.
                 </td>
-                <td className="px-4 py-3 text-right font-medium text-green-600">
-                  {transaction.inflow > 0 ? `+${transaction.inflow}` : '-'}
-                </td>
-                <td className="px-4 py-3 text-right font-medium text-blue-600">
-                  {transaction.outflow > 0 ? `-${transaction.outflow}` : '-'}
-                </td>
-                <td className="px-4 py-3 text-right font-semibold text-gray-800">
-                  {transaction.balance.toLocaleString()}
-                </td>
-                <td className="px-4 py-3">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                    {transaction.grade}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-gray-600 text-xs">{transaction.details || '-'}</td>
               </tr>
-            ))}
+            ) : (
+              transactions.map((transaction, index) => (
+                <tr
+                  key={transaction.id}
+                  className={`hover:bg-gray-50 transition-colors ${
+                    index !== transactions.length - 1 ? 'border-b border-gray-200' : ''
+                  }`}
+                >
+                  <td className="px-4 py-3 text-gray-700">{transaction.date}</td>
+                  <td className="px-4 py-3 text-gray-700">{transaction.time}</td>
+                  <td className="px-4 py-3 text-gray-700 font-mono text-xs">{transaction.reference}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        transaction.type === 'production' || transaction.type === 'PRODUCTION'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-blue-100 text-blue-800'
+                      }`}
+                    >
+                      {transaction.type === 'production' || transaction.type === 'PRODUCTION' ? '↑ Production' : '↓ Dispatch'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right font-medium text-green-600">
+                    {transaction.inflow > 0 ? `+${transaction.inflow}` : '-'}
+                  </td>
+                  <td className="px-4 py-3 text-right font-medium text-blue-600">
+                    {transaction.outflow > 0 ? `-${transaction.outflow}` : '-'}
+                  </td>
+                  <td className="px-4 py-3 text-right font-semibold text-gray-800">
+                    {transaction.balance.toLocaleString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                      {transaction.grade}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-gray-600 text-xs">{transaction.details || '-'}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
