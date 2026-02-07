@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -252,7 +252,7 @@ model Transaction {
 model FirewoodTransaction {
   id             String                   @id @default(uuid())
   date           DateTime                 @db.Date
-  time           DateTime                 @db.Time()
+  time           DateTime                 @db.Time
   type           InventoryTransactionType
   quantity       Decimal                  @db.Decimal(10, 2)
   factory        String?
@@ -277,7 +277,7 @@ model FirewoodTransaction {
 model PackingMaterialsTransaction {
   id             String                   @id @default(uuid())
   date           DateTime                 @db.Date
-  time           DateTime                 @db.Time()
+  time           DateTime                 @db.Time
   type           InventoryTransactionType
   quantity       Decimal                  @db.Decimal(10, 2)
   materialType   String?                  @map("material_type")
@@ -303,7 +303,7 @@ model PackingMaterialsTransaction {
 model GreenLeafIntake {
   id            String       @id @default(uuid())
   date          DateTime     @db.Date
-  time          DateTime     @db.Time()
+  time          DateTime     @db.Time
   supplier      String
   supplierType  SupplierType @map("supplier_type")
   vehicleNumber String       @map("vehicle_number")
@@ -367,7 +367,7 @@ model MadeTeaStock {
 model MadeTeaTransaction {
   id          String                   @id @default(uuid())
   date        DateTime                 @db.Date
-  time        DateTime                 @db.Time()
+  time        DateTime                 @db.Time
   reference   String
   type        MadeTeaTransactionType
   grade       TeaGrade
