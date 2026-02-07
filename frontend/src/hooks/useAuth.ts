@@ -40,8 +40,8 @@ export const useLogin = () => {
       });
 
       if (data?.login.token) {
-        localStorage.setItem('galathura_token', data.login.token);
-        localStorage.setItem('galathura_user', JSON.stringify(data.login.user));
+        sessionStorage.setItem('galathura_token', data.login.token);
+        sessionStorage.setItem('galathura_user', JSON.stringify(data.login.user));
       }
 
       return data?.login;
@@ -64,8 +64,8 @@ export const useRegister = () => {
       });
 
       if (data?.register.token) {
-        localStorage.setItem('galathura_token', data.register.token);
-        localStorage.setItem('galathura_user', JSON.stringify(data.register.user));
+        sessionStorage.setItem('galathura_token', data.register.token);
+        sessionStorage.setItem('galathura_user', JSON.stringify(data.register.user));
       }
 
       return data?.register;
@@ -81,7 +81,7 @@ export const useRegister = () => {
 export const useCurrentUser = () => {
   const { data, loading, error, refetch } = useQuery<MeResponse>(ME, {
     fetchPolicy: 'network-only',
-    skip: !localStorage.getItem('galathura_token'),
+    skip: !sessionStorage.getItem('galathura_token'),
   });
 
   return {
@@ -94,7 +94,7 @@ export const useCurrentUser = () => {
 };
 
 export const logout = () => {
-  localStorage.removeItem('galathura_token');
-  localStorage.removeItem('galathura_user');
+  sessionStorage.removeItem('galathura_token');
+  sessionStorage.removeItem('galathura_user');
   window.location.href = '/';
 };

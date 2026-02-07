@@ -6,7 +6,7 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext((_: unknown, { headers }: { headers?: Record<string, string> }) => {
-  const token = localStorage.getItem('galathura_token');
+  const token = sessionStorage.getItem('galathura_token');
   return {
     headers: {
       ...headers,

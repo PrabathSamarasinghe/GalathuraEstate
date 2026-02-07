@@ -634,21 +634,21 @@ const generateDummyTransactions = (): Transaction[] => {
   return transactions;
 };
 
-// Function to load dummy data into localStorage
+// Function to load dummy data into sessionStorage
 export const loadDummyData = () => {
   try {
     // Load employees
-    localStorage.setItem("galathura_employees", JSON.stringify(dummyEmployees));
+    sessionStorage.setItem("galathura_employees", JSON.stringify(dummyEmployees));
     console.log(`✅ Loaded ${dummyEmployees.length} dummy employees`);
 
     // Load attendance records
     const attendanceRecords = generateDummyAttendance();
-    localStorage.setItem("galathura_attendance", JSON.stringify(attendanceRecords));
+    sessionStorage.setItem("galathura_attendance", JSON.stringify(attendanceRecords));
     console.log(`✅ Loaded ${attendanceRecords.length} dummy attendance records (last 7 days)`);
 
     // Load transactions
     const transactions = generateDummyTransactions();
-    localStorage.setItem("galathura_transactions", JSON.stringify(transactions));
+    sessionStorage.setItem("galathura_transactions", JSON.stringify(transactions));
     console.log(`✅ Loaded ${transactions.length} dummy transactions (last 3 months)`);
 
     // Force reload the page to reflect changes
@@ -658,12 +658,12 @@ export const loadDummyData = () => {
   }
 };
 
-// FlocalStorage.removeItem("galathura_transactions");
+// FsessionStorage.removeItem("galathura_transactions");
    
 export const clearAllData = () => {
   if (window.confirm("Are you sure you want to clear all data? This cannot be undone.")) {
-    localStorage.removeItem("galathura_employees");
-    localStorage.removeItem("galathura_attendance");
+    sessionStorage.removeItem("galathura_employees");
+    sessionStorage.removeItem("galathura_attendance");
     console.log("🗑️ All data cleared");
     window.location.reload();
   }

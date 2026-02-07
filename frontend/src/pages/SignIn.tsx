@@ -30,11 +30,11 @@ const SignIn = () => {
 
       if (data?.login?.token) {
         // Store token and user data
-        localStorage.setItem('galathura_token', data.login.token);
-        localStorage.setItem('galathura_user', JSON.stringify(data.login.user));
+        sessionStorage.setItem('galathura_token', data.login.token);
+        sessionStorage.setItem('galathura_user', JSON.stringify(data.login.user));
         
         if (rememberMe) {
-          localStorage.setItem('galathura_email', email);
+          sessionStorage.setItem('galathura_email', email);
         }
 
         // Navigate to dashboard

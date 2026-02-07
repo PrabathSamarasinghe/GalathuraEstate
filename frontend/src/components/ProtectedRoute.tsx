@@ -6,7 +6,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const location = useLocation();
-  const token = localStorage.getItem('galathura_token');
+  const token = sessionStorage.getItem('galathura_token');
 
   if (!token) {
     // Redirect to signin page, but save the location they were trying to go to
