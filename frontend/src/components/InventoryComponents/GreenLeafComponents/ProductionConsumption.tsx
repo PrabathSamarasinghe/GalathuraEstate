@@ -3,40 +3,17 @@ interface ProductionBatch {
   date: string;
   batchNumber: string;
   greenLeafUsed: number;
-  madeTea: number;
+  madeTeaProduced: number;
   yieldPercentage: number;
 }
 
-const sampleBatches: ProductionBatch[] = [
-  {
-    id: '1',
-    date: '2025-12-23',
-    batchNumber: 'BATCH-231223-001',
-    greenLeafUsed: 1200,
-    madeTea: 264,
-    yieldPercentage: 22.0,
-  },
-  {
-    id: '2',
-    date: '2025-12-23',
-    batchNumber: 'BATCH-231223-002',
-    greenLeafUsed: 850,
-    madeTea: 187,
-    yieldPercentage: 22.0,
-  },
-  {
-    id: '3',
-    date: '2025-12-22',
-    batchNumber: 'BATCH-221223-001',
-    greenLeafUsed: 1500,
-    madeTea: 315,
-    yieldPercentage: 21.0,
-  },
-];
+interface ProductionConsumptionProps {
+  batches?: ProductionBatch[];
+}
 
-const ProductionConsumption = () => {
-  const totalConsumed = sampleBatches.reduce((sum, batch) => sum + batch.greenLeafUsed, 0);
-  const totalMadeTea = sampleBatches.reduce((sum, batch) => sum + batch.madeTea, 0);
+const ProductionConsumption = ({ batches = [] }: ProductionConsumptionProps) => {
+  const totalConsumed = batches.reduce((sum, batch) => sum + Number(batch.greenLeafUsed), 0);
+  const totalMadeTea = batches.reduce((sum, batch) => sum + Number(batch.madeTeaProduced), 0);
   const avgYield = totalConsumed > 0 ? (totalMadeTea / totalConsumed) * 100 : 0;
 
   return (
@@ -73,36 +50,44 @@ const ProductionConsumption = () => {
             </tr>
           </thead>
           <tbody className="text-sm">
-            {sampleBatches.map((batch, index) => (
+            {batches.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                  No production batches recorded yet.
+                </td>
+              </tr>
+            ) : (
+              batches.map((batch, index) => (
               <tr
                 key={batch.id}
                 className={`hover:bg-gray-50 transition-colors ${
-                  index !== sampleBatches.length - 1 ? 'border-b border-gray-200' : ''
+                  index !== batches.length - 1 ? 'border-b border-gray-200' : ''
                 }`}
               >
                 <td className="px-4 py-3 text-gray-700">{batch.date}</td>
                 <td className="px-4 py-3 text-gray-700 font-mono text-xs">{batch.batchNumber}</td>
                 <td className="px-4 py-3 text-right font-semibold text-red-600">
-                  {batch.greenLeafUsed}
+                  {Number(batch.greenLeafUsed).toLocaleString()}
                 </td>
                 <td className="px-4 py-3 text-right font-semibold text-green-600">
-                  {batch.madeTea}
+                  {Number(batch.madeTeaProduced).toLocaleString()}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <span
                     className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                      batch.yieldPercentage >= 22
+                      Number(batch.yieldPercentage) >= 22
                         ? 'bg-green-100 text-green-800'
-                        : batch.yieldPercentage >= 20
+                        : Number(batch.yieldPercentage) >= 20
                         ? 'bg-yellow-100 text-yellow-800'
                         : 'bg-red-100 text-red-800'
                     }`}
                   >
-                    {batch.yieldPercentage.toFixed(1)}%
+                    {Number(batch.yieldPercentage).toFixed(1)}%
                   </span>
                 </td>
               </tr>
-            ))}
+              ))
+            )}
           </tbody>
         </table>
       </div>

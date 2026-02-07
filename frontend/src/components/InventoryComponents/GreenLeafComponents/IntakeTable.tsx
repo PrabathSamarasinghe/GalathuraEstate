@@ -4,11 +4,11 @@ interface IntakeRecord {
   time: string;
   supplier: string;
   supplierType: string;
-  vehicleNumber: string;
+  vehicleNumber?: string;
   grossWeight: number;
   tareWeight: number;
   netWeight: number;
-  quality: string;
+  quality?: string;
   session: string;
   remarks?: string;
 }

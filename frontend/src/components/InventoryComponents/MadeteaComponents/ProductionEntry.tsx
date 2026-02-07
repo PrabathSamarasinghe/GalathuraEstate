@@ -14,11 +14,22 @@ const ProductionEntry = ({ onSubmit }: ProductionEntryProps) => {
   const [batchNumber, setBatchNumber] = useState('');
   const [greenLeafUsed, setGreenLeafUsed] = useState('');
   const [grades, setGrades] = useState({
-    BOP: '',
+    OP1: '',
+    OPA: '',
+    BOP1: '',
+    PEK: '',
+    PEK1: '',
     FBOP: '',
-    OP: '',
-    Dust: '',
-    Others: '',
+    FBOPF1: '',
+    BOPA: '',
+    BOPFSP: '',
+    BOPFEXSP: '',
+    BM: '',
+    BP: '',
+    BOP1A: '',
+    BT: '',
+    DUST1: '',
+    DUST: '',
   });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,7 +83,7 @@ const ProductionEntry = ({ onSubmit }: ProductionEntryProps) => {
         // Success - clear form
         setBatchNumber('');
         setGreenLeafUsed('');
-        setGrades({ BOP: '', FBOP: '', OP: '', Dust: '', Others: '' });
+        setGrades({ OP1: '', OPA: '', BOP1: '', PEK: '', PEK1: '', FBOP: '', FBOPF1: '', BOPA: '', BOPFSP: '', BOPFEXSP: '', BM: '', BP: '', BOP1A: '', BT: '', DUST1: '', DUST: '' });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to record production');
       } finally {
@@ -82,7 +93,7 @@ const ProductionEntry = ({ onSubmit }: ProductionEntryProps) => {
       console.log('Production submitted:', productionData);
       setBatchNumber('');
       setGreenLeafUsed('');
-      setGrades({ BOP: '', FBOP: '', OP: '', Dust: '', Others: '' });
+        setGrades({ OP1: '', OPA: '', BOP1: '', PEK: '', PEK1: '', FBOP: '', FBOPF1: '', BOPA: '', BOPFSP: '', BOPFEXSP: '', BM: '', BP: '', BOP1A: '', BT: '', DUST1: '', DUST: '' });
     }
   };
 

@@ -75,11 +75,22 @@ export const typeDefs = `#graphql
   }
 
   enum TeaGrade {
-    BOP
+    OP1
+    OPA
+    BOP1
+    PEK
+    PEK1
     FBOP
-    OP
-    Dust
-    Others
+    FBOPF1
+    BOPA
+    BOPFSP
+    BOPFEXSP
+    BM
+    BP
+    BOP1A
+    BT
+    DUST1
+    DUST
   }
 
   enum InventoryTransactionType {

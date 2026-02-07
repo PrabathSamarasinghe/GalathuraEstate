@@ -4,14 +4,13 @@ interface IntakeFormProps {
   onSubmit?: (data: {
     supplier: string;
     supplierType: string;
-    vehicleNumber: string;
+    vehicleNumber?: string;
     grossWeight: number;
     tareWeight: number;
-    netWeight: number;
-    quality: string;
+    quality?: string;
     session: string;
     remarks?: string;
-  }) => Promise<void>;
+  }) => Promise<{ success: boolean; error?: unknown }>;
 }
 
 const IntakeForm = ({ onSubmit }: IntakeFormProps) => {

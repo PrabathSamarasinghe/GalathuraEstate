@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@apollo/client";
-import { GET_GREEN_LEAF_INTAKES, CREATE_GREEN_LEAF_INTAKE } from "../../graphql/queries";
+import { GET_GREEN_LEAF_INTAKES, CREATE_GREEN_LEAF_INTAKE, GET_PRODUCTION_BATCHES } from "../../graphql/queries";
 import SummarySection from "./GreenLeafComponents/SummarySection";
 import ChartsSection from "./GreenLeafComponents/ChartsSection";
 import IntakeTable from "./GreenLeafComponents/IntakeTable";
@@ -34,6 +34,10 @@ interface GreenLeafSummary {
 
 const GreenLeaf = () => {
   const { data, loading, error, refetch } = useQuery(GET_GREEN_LEAF_INTAKES, {
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const { data: productionData } = useQuery(GET_PRODUCTION_BATCHES, {
     fetchPolicy: 'cache-and-network',
   });
 
@@ -115,10 +119,10 @@ const GreenLeaf = () => {
       <IntakeForm onSubmit={handleCreateIntake} />
 
       {/* Production Consumption */}
-      <ProductionConsumption />
+      <ProductionConsumption batches={productionData?.productionBatches || []} />
 
       {/* Efficiency & Insights */}
-      <EfficiencyPanel />
+      <EfficiencyPanel intakes={intakes} batches={productionData?.productionBatches || []} />
     </div>
   );
 };
