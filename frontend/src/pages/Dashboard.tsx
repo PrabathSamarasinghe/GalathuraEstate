@@ -213,7 +213,7 @@ const Dashboard = () => {
         description: act.description,
         date: selectedDate,
         type: 'Income' as const,
-        category: act.activityType,
+        category: act.activityType as any,
         amount: 0,
         paymentType: 'Cash' as const,
         createdAt: act.createdAt,

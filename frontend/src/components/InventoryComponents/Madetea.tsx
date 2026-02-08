@@ -51,34 +51,39 @@ const Madetea = () => {
     onCompleted: () => refetch(),
   });
 
-  const handleCreateProduction = async (input: {
+  const handleCreateProduction = async (data: {
+    batchNumber: string;
     greenLeafUsed: number;
-    gradeOutputs: { grade: string; quantity: number }[];
+    grades: Record<string, number>;
+    totalOutput: number;
+    yieldPercentage: number;
   }) => {
     try {
+      const gradeOutputs = Object.entries(data.grades)
+        .filter(([_, quantity]) => quantity > 0)
+        .map(([grade, quantity]) => ({ grade, quantity }));
+
       await createProductionBatch({
         variables: {
           input: {
             date: new Date().toISOString().split('T')[0],
-            greenLeafUsed: input.greenLeafUsed,
-            gradeOutputs: input.gradeOutputs,
+            greenLeafUsed: data.greenLeafUsed,
+            gradeOutputs,
           },
         },
       });
-      return { success: true };
     } catch (err) {
       console.error("Error creating production batch:", err);
-      return { success: false, error: err };
+      throw err;
     }
   };
 
-  const handleCreateDispatch = async (input: {
+  const handleCreateDispatch = async (data: {
     grade: string;
     quantity: number;
-    destination: string;
-    buyer?: string;
-    vehicleNumber?: string;
-    invoiceNumber?: string;
+    buyer: string;
+    invoiceNumber: string;
+    packingType: string;
     remarks?: string;
   }) => {
     try {
@@ -86,14 +91,18 @@ const Madetea = () => {
         variables: {
           input: {
             date: new Date().toISOString().split('T')[0],
-            ...input,
+            grade: data.grade,
+            quantity: data.quantity,
+            destination: data.buyer,
+            buyer: data.buyer,
+            invoiceNumber: data.invoiceNumber,
+            remarks: data.remarks,
           },
         },
       });
-      return { success: true };
     } catch (err) {
       console.error("Error creating dispatch record:", err);
-      return { success: false, error: err };
+      throw err;
     }
   };
 
