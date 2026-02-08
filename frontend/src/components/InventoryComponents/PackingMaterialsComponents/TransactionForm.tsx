@@ -21,7 +21,6 @@ const TransactionForm = ({ itemName, currentStock, onSubmit }: TransactionFormPr
   const [inflowMaterialType, setInflowMaterialType] = useState('');
   const [inflowPrice, setInflowPrice] = useState('');
   const [inflowRemarks, setInflowRemarks] = useState('');
-  const [inflowLoading, setInflowLoading] = useState(false);
 
   // Outflow state
   const [outflowQuantity, setOutflowQuantity] = useState('');
@@ -29,7 +28,6 @@ const TransactionForm = ({ itemName, currentStock, onSubmit }: TransactionFormPr
   const [outflowFactory, setOutflowFactory] = useState('');
   const [outflowSupervisor, setOutflowSupervisor] = useState('');
   const [outflowRemarks, setOutflowRemarks] = useState('');
-  const [outflowLoading, setOutflowLoading] = useState(false);
 
   // Error states
   const [inflowError, setInflowError] = useState('');
@@ -56,7 +54,6 @@ const TransactionForm = ({ itemName, currentStock, onSubmit }: TransactionFormPr
     }
 
     if (onSubmit) {
-      setInflowLoading(true);
       const result = await onSubmit({
         type: 'Inflow',
         quantity,
@@ -64,7 +61,6 @@ const TransactionForm = ({ itemName, currentStock, onSubmit }: TransactionFormPr
         price,
         remarks: inflowRemarks || undefined,
       });
-      setInflowLoading(false);
 
       if (result.success) {
         setInflowQuantity('');
@@ -106,7 +102,6 @@ const TransactionForm = ({ itemName, currentStock, onSubmit }: TransactionFormPr
     }
 
     if (onSubmit) {
-      setOutflowLoading(true);
       const result = await onSubmit({
         type: 'Outflow',
         quantity,
@@ -115,7 +110,6 @@ const TransactionForm = ({ itemName, currentStock, onSubmit }: TransactionFormPr
         supervisor: outflowSupervisor,
         remarks: outflowRemarks || undefined,
       });
-      setOutflowLoading(false);
 
       if (result.success) {
         setOutflowQuantity('');

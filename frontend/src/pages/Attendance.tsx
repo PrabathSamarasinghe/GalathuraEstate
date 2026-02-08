@@ -89,42 +89,6 @@ const Attendance = () => {
     markedAt: record.markedAt,
   }));
 
-  // Calculate wage for an employee based on attendance
-  const calculateWage = (
-    employee: Employee,
-    status: AttendanceStatus,
-    otHours: number
-  ): number => {
-    let baseWage = 0;
-
-    // Calculate base wage based on status
-    if (status === AttendanceStatus.PRESENT) {
-      if (employee.payType === PayType.DAILY_WAGE) {
-        baseWage = employee.rate;
-      } else if (employee.payType === PayType.HOURLY) {
-        baseWage = employee.rate * 8; // Assuming 8 hours workday
-      } else if (employee.payType === PayType.MONTHLY_SALARY) {
-        baseWage = employee.rate / 26; // Assuming 26 working days per month
-      }
-    } else if (status === AttendanceStatus.HALF_DAY) {
-      if (employee.payType === PayType.DAILY_WAGE) {
-        baseWage = employee.rate * 0.5;
-      } else if (employee.payType === PayType.HOURLY) {
-        baseWage = employee.rate * 4; // 4 hours for half day
-      } else if (employee.payType === PayType.MONTHLY_SALARY) {
-        baseWage = (employee.rate / 26) * 0.5;
-      }
-    }
-
-    // Add OT wages
-    let otWage = 0;
-    if (otHours > 0 && employee.otRate) {
-      otWage = employee.otRate * otHours;
-    }
-
-    return baseWage + otWage;
-  };
-
   // Get existing records for selected date
   const existingRecordsMap = useMemo(() => {
     const map = new Map<string, AttendanceFormData>();

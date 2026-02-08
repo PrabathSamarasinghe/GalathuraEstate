@@ -164,7 +164,6 @@ const PLStatement = ({
   const rowClasses = "py-2 border-b border-gray-100";
   const labelClasses = "text-sm text-gray-700";
   const amountClasses = "text-sm font-medium text-right";
-  const totalClasses = "text-sm font-bold text-right";
   const sectionTotalClasses = "py-2 bg-gray-50 border-y-2 border-gray-300";
 
   return (
