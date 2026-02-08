@@ -154,7 +154,7 @@ const Madetea = () => {
       <ChartsSection transactions={transactions} gradeStocks={gradeStocks} />
 
       {/* Production and Dispatch Forms */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid sm:grid-cols-2 gap-6">
         <ProductionEntry onSubmit={handleCreateProduction} />
         <DispatchForm gradeStocks={gradeStocks} onSubmit={handleCreateDispatch} />
       </div>
