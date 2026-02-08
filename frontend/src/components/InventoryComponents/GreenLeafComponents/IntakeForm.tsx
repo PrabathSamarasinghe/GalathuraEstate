@@ -61,11 +61,10 @@ const IntakeForm = ({ onSubmit }: IntakeFormProps) => {
 
     const intakeData = {
       supplier,
-      supplierType: supplierType.toUpperCase(),
+      supplierType: supplierType,
       vehicleNumber,
       grossWeight: gross,
       tareWeight: tare,
-      netWeight: netWeight,
       quality,
       session,
       remarks: remarks || undefined,
