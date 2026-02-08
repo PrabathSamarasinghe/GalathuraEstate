@@ -6,10 +6,24 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // import DataLoader from "./components/DataLoader";
 import routesConfig from "./config/routes.json";
 import SignIn from "./pages/SignIn";
-const Layout = lazy(() => import("./context/Layout"));
 
-const Component = (componentName: string) => {
-  return lazy(() => import(`./pages/${componentName}`));
+// Lazy load all pages
+const Layout = lazy(() => import("./context/Layout"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Inventory = lazy(() => import("./pages/Inventory"));
+const Attendance = lazy(() => import("./pages/Attendance"));
+const Employees = lazy(() => import("./pages/Employees"));
+const ExpensesAndIncome = lazy(() => import("./pages/ExpensesAndIncome"));
+const ProfitAndLoss = lazy(() => import("./pages/ProfitAndLoss"));
+
+// Component map for dynamic routing
+const componentMap: Record<string, React.LazyExoticComponent<React.ComponentType>> = {
+  Dashboard,
+  Inventory,
+  Attendance,
+  Employees,
+  ExpensesAndIncome,
+  ProfitAndLoss,
 };
 
 const App = () => {
@@ -26,12 +40,12 @@ const App = () => {
             }
           >
             {routesConfig.map((route) => {
-              const LazyComponent = Component(route.component);
+              const Component = componentMap[route.component];
               return (
                 <Route
                   key={route.path}
                   path={route.path}
-                  element={<LazyComponent />}
+                  element={<Component />}
                 />
               );
             })}
