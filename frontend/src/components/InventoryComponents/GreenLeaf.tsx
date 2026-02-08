@@ -62,7 +62,6 @@ const GreenLeaf = () => {
             date: new Date().toISOString().split('T')[0],
             time: new Date().toTimeString().split(' ')[0].substring(0, 5),
             ...input,
-            netWeight: input.grossWeight - input.tareWeight,
           },
         },
       });
