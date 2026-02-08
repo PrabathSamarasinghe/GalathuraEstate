@@ -41,7 +41,7 @@ async function main() {
   console.log('✅ Created system settings');
 
   // Initialize Made Tea Stock for each grade
-  const grades = ['BOP', 'FBOP', 'OP', 'Dust', 'Others'] as const;
+  const grades = ['OP1', 'OPA', 'BOP1', 'PEK', 'PEK1', 'FBOP', 'FBOPF1', 'BOPA', 'BOPFSP', 'BOPFEXSP', 'BM', 'BP', 'BOP1A', 'BT', 'DUST1', 'DUST'] as const;
   for (const grade of grades) {
     await prisma.madeTeaStock.upsert({
       where: { grade },
