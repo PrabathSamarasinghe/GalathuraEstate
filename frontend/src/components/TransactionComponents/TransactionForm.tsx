@@ -104,15 +104,15 @@ const TransactionForm = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Transaction Type Toggle */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
           Transaction Type
         </h3>
-        <div className="flex gap-4">
+        <div className="flex gap-2 sm:gap-4">
           <button
             type="button"
             onClick={() => handleTypeChange(TransactionType.EXPENSE)}
-            className={`flex-1 px-6 py-3 rounded-lg font-medium transition ${
+            className={`flex-1 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition text-sm sm:text-base ${
               formData.type === TransactionType.EXPENSE
                 ? "bg-red-100 text-red-700 border-2 border-red-500"
                 : "bg-gray-100 text-gray-600 border-2 border-gray-300 hover:bg-gray-200"
@@ -123,7 +123,7 @@ const TransactionForm = ({
           <button
             type="button"
             onClick={() => handleTypeChange(TransactionType.INCOME)}
-            className={`flex-1 px-6 py-3 rounded-lg font-medium transition ${
+            className={`flex-1 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition text-sm sm:text-base ${
               formData.type === TransactionType.INCOME
                 ? "bg-green-100 text-green-700 border-2 border-green-500"
                 : "bg-gray-100 text-gray-600 border-2 border-gray-300 hover:bg-gray-200"
@@ -267,17 +267,17 @@ const TransactionForm = ({
       </div>
 
       {/* Form Actions */}
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-col sm:flex-row justify-end gap-3">
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
+          className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition text-sm sm:text-base"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className={`px-6 py-2 text-white rounded-md transition ${
+          className={`px-6 py-2 text-white rounded-md transition text-sm sm:text-base ${
             formData.type === TransactionType.EXPENSE
               ? "bg-red-600 hover:bg-red-700"
               : "bg-green-600 hover:bg-green-700"

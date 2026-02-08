@@ -83,7 +83,7 @@ const EfficiencyPanel = ({ intakes = [], batches = [] }: EfficiencyPanelProps) =
           No data available yet. Add green leaf intakes and production batches to see insights.
         </div>
       ) : (
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Key Metrics */}
         <div className="space-y-4">
           <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 border border-green-200">

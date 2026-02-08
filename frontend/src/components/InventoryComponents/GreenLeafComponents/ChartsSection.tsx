@@ -104,10 +104,10 @@ const ChartsSection = ({ intakes = [] }: ChartsSectionProps) => {
     <div className="space-y-4">
       {/* Date Range Filter */}
       <div className="flex justify-end">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-2 flex gap-2">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-2 flex flex-wrap gap-2">
           <button
             onClick={() => setDateRange('7')}
-            className={`px-4 py-1 rounded-md text-sm font-medium transition-colors ${
+            className={`px-3 sm:px-4 py-1 rounded-md text-xs sm:text-sm font-medium transition-colors ${
               dateRange === '7'
                 ? 'bg-green-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -117,7 +117,7 @@ const ChartsSection = ({ intakes = [] }: ChartsSectionProps) => {
           </button>
           <button
             onClick={() => setDateRange('30')}
-            className={`px-4 py-1 rounded-md text-sm font-medium transition-colors ${
+            className={`px-3 sm:px-4 py-1 rounded-md text-xs sm:text-sm font-medium transition-colors ${
               dateRange === '30'
                 ? 'bg-green-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -127,7 +127,7 @@ const ChartsSection = ({ intakes = [] }: ChartsSectionProps) => {
           </button>
           <button
             onClick={() => setDateRange('90')}
-            className={`px-4 py-1 rounded-md text-sm font-medium transition-colors ${
+            className={`px-3 sm:px-4 py-1 rounded-md text-xs sm:text-sm font-medium transition-colors ${
               dateRange === '90'
                 ? 'bg-green-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -139,10 +139,10 @@ const ChartsSection = ({ intakes = [] }: ChartsSectionProps) => {
       </div>
 
       {/* Charts Container */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Daily Intake Trend */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Daily Green Leaf Intake</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">Daily Green Leaf Intake</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -164,7 +164,7 @@ const ChartsSection = ({ intakes = [] }: ChartsSectionProps) => {
 
         {/* Intake vs Made Tea */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Intake vs Made Tea Output</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">Intake vs Made Tea Output</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -180,7 +180,7 @@ const ChartsSection = ({ intakes = [] }: ChartsSectionProps) => {
 
         {/* Supplier Distribution */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Supplier-wise Distribution</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">Supplier-wise Distribution</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie

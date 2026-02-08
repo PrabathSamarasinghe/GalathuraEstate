@@ -8,7 +8,34 @@ import { resolvers } from './resolvers/index.js';
 
 dotenv.config();
 
-const prisma = new PrismaClient();
+// Log environment configuration (sanitized)
+console.log('🔧 Environment Configuration:');
+console.log('  NODE_ENV:', process.env.NODE_ENV || 'not set');
+console.log('  PORT:', process.env.PORT || '4000');
+console.log('  JWT_SECRET:', process.env.JWT_SECRET ? '✓ Set' : '✗ Not set');
+console.log('  FRONTEND_URL:', process.env.FRONTEND_URL || 'not set');
+
+const dbUrl = process.env.DATABASE_URL;
+if (dbUrl) {
+  // Sanitize URL for logging
+  const sanitized = dbUrl.replace(/:\/\/([^:]+):([^@]+)@/, '://***:***@');
+  console.log('  DATABASE_URL:', sanitized);
+} else {
+  console.error('  DATABASE_URL: ✗ Not set!');
+}
+
+console.log('\n📦 Initializing Prisma Client...');
+const prisma = new PrismaClient({
+  log: ['query', 'info', 'warn', 'error'],
+});
+
+// Test database connection
+prisma.$connect()
+  .then(() => console.log('✅ Database connected successfully'))
+  .catch((error) => {
+    console.error('❌ Database connection failed:', error.message);
+    console.error('Full error:', error);
+  });
 
 export interface Context {
   prisma: PrismaClient;
@@ -16,9 +43,19 @@ export interface Context {
 }
 
 async function startServer() {
+  console.log('\n🚀 Starting Apollo Server...');
+  
   const server = new ApolloServer<Context>({
     typeDefs,
     resolvers,
+    formatError: (error) => {
+      console.error('❌ GraphQL Error:', {
+        message: error.message,
+        path: error.path,
+        extensions: error.extensions,
+      });
+      return error;
+    },
   });
 
   const { url } = await startStandaloneServer(server, {
@@ -39,8 +76,9 @@ async function startServer() {
             username: decoded.username,
             role: decoded.role,
           };
+          console.log('✅ Authenticated user:', user.username);
         } catch (error) {
-          // Invalid token - user remains null
+          console.warn('⚠️ Invalid token received');
         }
       }
 
@@ -48,8 +86,10 @@ async function startServer() {
     },
   });
 
-  console.log(`🚀 Server ready at: ${url}`);
-  console.log(`📊 GraphQL Playground available at: ${url}`);
+  console.log('\n✅ Server ready!');
+  console.log(`🚀 Server URL: ${url}`);
+  console.log(`📊 GraphQL Playground: ${url}`);
+  console.log('\n📝 Logs:');
 }
 
 startServer().catch(console.error);

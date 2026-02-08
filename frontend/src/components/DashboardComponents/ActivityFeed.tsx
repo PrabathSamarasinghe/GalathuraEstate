@@ -8,7 +8,7 @@ interface ActivityFeedProps {
 const ActivityFeed = ({ recentActivity }: ActivityFeedProps) => {
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Today's Activity</h3>
+      <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">Today's Activity</h3>
       <div className="space-y-3">
         {recentActivity.length > 0 ? (
           recentActivity.map((activity) => (

@@ -19,7 +19,7 @@ const SummarySection = ({
   const isNearlyLowStock = stock <= lowStockThreshold * 1.5 && !isLowStock;
 
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Current Stock */}
       <div className={`bg-white rounded-lg shadow-sm border p-4 ${
         isLowStock ? 'border-red-500 border-2' : isNearlyLowStock ? 'border-yellow-500' : 'border-gray-300'

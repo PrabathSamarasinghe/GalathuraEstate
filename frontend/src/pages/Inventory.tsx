@@ -27,11 +27,11 @@ const Inventory = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-baseline">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-4">
         
         <div>
-          <h1 className="text-4xl font-bold text-gray-900">Inventory Management</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-2xl md:text-4xl font-bold text-gray-900">Inventory Management</h1>
+          <p className="mt-2 text-gray-600 text-sm md:text-base">
             Keep track of your stock levels and manage inventory efficiently!
           </p>
         </div>
@@ -39,7 +39,7 @@ const Inventory = () => {
         <select
           name="inventory"
           id="inventory-select"
-          className="mt-4 p-2 border border-green-300 rounded"
+          className="p-2 border border-green-300 rounded text-sm md:text-base"
           value={selectTab}
           onChange={(e) => setSelectTab(e.target.value as InventoryTabs)}
         >

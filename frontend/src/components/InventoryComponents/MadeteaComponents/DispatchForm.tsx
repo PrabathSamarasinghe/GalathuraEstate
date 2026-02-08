@@ -106,7 +106,7 @@ const DispatchForm = ({ gradeStocks, onSubmit }: DispatchFormProps) => {
 
       <div className="space-y-4">
         {/* Grade and Quantity */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <label className="block">
             <span className="text-sm font-medium text-gray-700 mb-1.5 block">
               Tea Grade <span className="text-red-500">*</span>
@@ -167,7 +167,7 @@ const DispatchForm = ({ gradeStocks, onSubmit }: DispatchFormProps) => {
         )}
 
         {/* Buyer and Invoice */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <label className="block">
             <span className="text-sm font-medium text-gray-700 mb-1.5 block">
               Buyer / Broker / Auction Lot <span className="text-red-500">*</span>

@@ -9,8 +9,8 @@ const ViewEmployeeModal = ({ employee, onClose }: ViewEmployeeModalProps) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-900">Employee Details</h2>
+        <div className="sticky top-0 bg-white border-b px-4 sm:px-6 py-4 flex justify-between items-center">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Employee Details</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
@@ -19,13 +19,13 @@ const ViewEmployeeModal = ({ employee, onClose }: ViewEmployeeModalProps) => {
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-6">
           {/* Basic Details */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3 border-b pb-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 border-b pb-2">
               Basic Details
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600">Employee ID</p>
                 <p className="font-medium text-green-600">{employee.id}</p>
@@ -43,7 +43,7 @@ const ViewEmployeeModal = ({ employee, onClose }: ViewEmployeeModalProps) => {
                 <p className="font-medium">{employee.contactNumber}</p>
               </div>
               {employee.address && (
-                <div className="col-span-2">
+                <div className="sm:col-span-2">
                   <p className="text-sm text-gray-600">Address</p>
                   <p className="font-medium">{employee.address}</p>
                 </div>
@@ -53,10 +53,10 @@ const ViewEmployeeModal = ({ employee, onClose }: ViewEmployeeModalProps) => {
 
           {/* Work Details */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3 border-b pb-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 border-b pb-2">
               Work Details
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600">Department / Section</p>
                 <p className="font-medium">{employee.department}</p>
@@ -92,10 +92,10 @@ const ViewEmployeeModal = ({ employee, onClose }: ViewEmployeeModalProps) => {
 
           {/* Wage Configuration */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3 border-b pb-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 border-b pb-2">
               Wage Configuration
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600">Pay Type</p>
                 <p className="font-medium">{employee.payType}</p>

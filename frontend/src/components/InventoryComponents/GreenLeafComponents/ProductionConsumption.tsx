@@ -18,9 +18,9 @@ const ProductionConsumption = ({ batches = [] }: ProductionConsumptionProps) => 
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-800">Production Consumption (System-Linked)</h3>
-        <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-6">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800">Production Consumption (System-Linked)</h3>
+        <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm">
           <div className="text-sm">
             <span className="text-gray-600">Total Consumed Today:</span>
             <span className="ml-2 font-semibold text-gray-800">{totalConsumed} kg</span>

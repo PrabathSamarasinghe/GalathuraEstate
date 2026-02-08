@@ -130,13 +130,13 @@ const TransactionForm = ({ itemName, currentStock, onSubmit }: TransactionFormPr
         Add {itemName} Transaction
       </h3>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Inflow Section */}
         <div className="border-r border-gray-200 pr-6">
           <h4 className="text-md font-semibold text-green-700 mb-4">Inflow (Purchase/Received)</h4>
         
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label htmlFor="inflow-quantity" className="block">
               <span className="text-sm font-medium text-gray-700 mb-1.5 block">
                 Quantity <span className="text-red-500">*</span>
@@ -222,7 +222,7 @@ const TransactionForm = ({ itemName, currentStock, onSubmit }: TransactionFormPr
           <h4 className="text-md font-semibold text-red-700 mb-4">Outflow (Used/Consumed)</h4>
         
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label htmlFor="outflow-quantity" className="block">
               <span className="text-sm font-medium text-gray-700 mb-1.5 block">
                 Quantity <span className="text-red-500">*</span>
@@ -259,7 +259,7 @@ const TransactionForm = ({ itemName, currentStock, onSubmit }: TransactionFormPr
             </label>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label htmlFor="outflow-factory" className="block">
               <span className="text-sm font-medium text-gray-700 mb-1.5 block">
                 Factory <span className="text-red-500">*</span>
