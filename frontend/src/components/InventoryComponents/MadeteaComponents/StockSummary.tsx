@@ -23,7 +23,7 @@ const StockSummary = ({
   return (
     <div className="space-y-4">
       {/* Main Metrics */}
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4">
           <div className="text-sm font-medium text-gray-600 mb-1">Total Stock</div>
           <div className="text-2xl font-bold text-gray-800">{totalStock.toLocaleString()} kg</div>
@@ -58,7 +58,7 @@ const StockSummary = ({
       {/* Grade-wise Stock */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4">
         <h3 className="text-md font-semibold text-gray-800 mb-4">Grade-wise Stock Distribution</h3>
-        <div className="grid grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {gradeStocks.map((grade) => (
             <div
               key={grade.grade}

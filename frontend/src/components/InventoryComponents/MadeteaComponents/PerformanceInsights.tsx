@@ -22,9 +22,9 @@ const PerformanceInsights = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-6">Performance & Yield Insights</h3>
+      <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-6">Performance & Yield Insights</h3>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Key Performance Metrics */}
         <div className="space-y-4">
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">

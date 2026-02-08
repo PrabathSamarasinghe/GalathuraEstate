@@ -224,7 +224,7 @@ const BulkAttendanceEntry = ({
 
         {/* Summary */}
         {selectedDepartment && (
-          <div className="flex gap-4 mt-4 text-sm">
+          <div className="flex flex-wrap gap-3 sm:gap-4 mt-4 text-xs sm:text-sm">
             <span className="text-gray-600">
               Total: <strong>{filteredEmployees.length}</strong>
             </span>

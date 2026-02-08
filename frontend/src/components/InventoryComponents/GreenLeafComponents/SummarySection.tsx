@@ -20,7 +20,7 @@ const SummarySection = ({
   const isHighRejection = rejectedWastage > averageDailyIntake * 0.05;
 
   return (
-    <div className="grid grid-cols-6 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
       {/* Today's Intake */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4">
         <div className="text-sm font-medium text-gray-600 mb-1">Today's Intake</div>

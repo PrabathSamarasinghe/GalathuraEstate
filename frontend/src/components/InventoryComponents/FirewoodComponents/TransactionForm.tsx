@@ -121,7 +121,7 @@ const TransactionForm = ({ itemName, currentStock, onSubmit }: TransactionFormPr
         Add {itemName} Transaction
       </h3>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Inflow Section */}
         <div className="border-r border-gray-200 pr-6">
           <h4 className="text-md font-semibold text-green-700 mb-4">Inflow (Purchase/Received)</h4>

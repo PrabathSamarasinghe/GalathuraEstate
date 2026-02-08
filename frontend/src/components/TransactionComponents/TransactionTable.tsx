@@ -153,7 +153,7 @@ const TransactionTable = ({
     <div className="space-y-4">
       {/* Filters Section */}
       <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Search
@@ -164,7 +164,7 @@ const TransactionTable = ({
               placeholder="Description, reference..."
               value={filters.searchTerm}
               onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-sm"
             />
           </div>
 
@@ -177,7 +177,7 @@ const TransactionTable = ({
               name="dateFrom"
               value={filters.dateFrom}
               onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-sm"
             />
           </div>
 
@@ -190,7 +190,7 @@ const TransactionTable = ({
               name="dateTo"
               value={filters.dateTo}
               onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-sm"
             />
           </div>
 
@@ -202,7 +202,7 @@ const TransactionTable = ({
               name="type"
               value={filters.type}
               onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-sm"
             >
               <option value="">All Types</option>
               {Object.values(TransactionType).map((type) => (
@@ -221,7 +221,7 @@ const TransactionTable = ({
               name="category"
               value={filters.category}
               onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-sm"
             >
               <option value="">All Categories</option>
               {allCategories.map((cat) => (
@@ -240,7 +240,7 @@ const TransactionTable = ({
               name="paymentType"
               value={filters.paymentType}
               onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-sm"
             >
               <option value="">All Payments</option>
               {Object.values(PaymentType).map((type) => (
@@ -252,8 +252,8 @@ const TransactionTable = ({
           </div>
         </div>
 
-        <div className="flex justify-between items-center mt-4">
-          <div className="flex gap-4 text-sm">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mt-4">
+          <div className="flex flex-wrap gap-3 text-xs sm:text-sm">
             <span className="text-gray-600">
               Showing {filteredAndSortedTransactions.length} of {transactions.length}{" "}
               records
@@ -274,7 +274,7 @@ const TransactionTable = ({
           </div>
           <button
             onClick={clearFilters}
-            className="text-sm text-green-600 hover:text-green-700 font-medium"
+            className="text-xs sm:text-sm text-green-600 hover:text-green-700 font-medium self-end"
           >
             Clear Filters
           </button>

@@ -10,12 +10,12 @@ const AttendanceSummaryCard = ({
   selectedDate,
 }: AttendanceSummaryCardProps) => {
   return (
-    <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 border border-green-200 shadow-sm">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">
+    <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-4 sm:p-6 border border-green-200 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
           Attendance Summary
         </h3>
-        <span className="text-sm text-gray-600">
+        <span className="text-xs sm:text-sm text-gray-600">
           {new Date(selectedDate).toLocaleDateString("en-US", {
             weekday: "long",
             year: "numeric",

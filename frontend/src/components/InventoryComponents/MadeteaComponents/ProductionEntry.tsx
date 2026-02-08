@@ -109,7 +109,7 @@ const ProductionEntry = ({ onSubmit }: ProductionEntryProps) => {
 
       <div className="space-y-4">
         {/* Batch Info */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <label className="block">
             <span className="text-sm font-medium text-gray-700 mb-1.5 block">
               Batch Number <span className="text-red-500">*</span>
@@ -144,7 +144,7 @@ const ProductionEntry = ({ onSubmit }: ProductionEntryProps) => {
           <div className="text-sm font-medium text-gray-700 mb-2">
             Grade-wise Output (kg) <span className="text-red-500">*</span>
           </div>
-          <div className="grid grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
             {Object.keys(grades).map((grade) => (
               <label key={grade} className="block">
                 <span className="text-xs font-medium text-gray-600 mb-1 block">{grade}</span>
@@ -163,7 +163,7 @@ const ProductionEntry = ({ onSubmit }: ProductionEntryProps) => {
         </div>
 
         {/* Calculated Values */}
-        <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
           <div>
             <div className="text-sm text-gray-600 mb-1">Total Made Tea Output</div>
             <div className="text-2xl font-bold text-green-700">{totalOutput.toFixed(1)} kg</div>

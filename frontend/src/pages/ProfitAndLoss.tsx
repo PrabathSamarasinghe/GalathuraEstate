@@ -125,10 +125,10 @@ const ProfitAndLoss = () => {
       {/* Header */}
 
       <div>
-        <h1 className="text-4xl font-bold text-gray-900">
+        <h1 className="text-2xl md:text-4xl font-bold text-gray-900">
           Profit & Loss Statement
         </h1>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-2 text-gray-600 text-sm md:text-base">
           Generate formal tea factory P&L statements with period comparison
         </p>
       </div>

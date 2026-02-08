@@ -223,17 +223,17 @@ const Attendance = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900">Attendance Management</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-2xl md:text-4xl font-bold text-gray-900">Attendance Management</h1>
+          <p className="mt-2 text-gray-600 text-sm md:text-base">
             Mark daily attendance and track workforce presence
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3">
           <button
             onClick={() => setView("entry")}
-            className={`px-6 py-3 rounded-lg font-medium transition ${
+            className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition text-sm md:text-base ${
               view === "entry"
                 ? "bg-green-600 text-white shadow-sm"
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
@@ -243,7 +243,7 @@ const Attendance = () => {
           </button>
           <button
             onClick={() => setView("records")}
-            className={`px-6 py-3 rounded-lg font-medium transition ${
+            className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition text-sm md:text-base ${
               view === "records"
                 ? "bg-green-600 text-white shadow-sm"
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"

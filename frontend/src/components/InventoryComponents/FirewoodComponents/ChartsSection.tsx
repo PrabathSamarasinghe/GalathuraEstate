@@ -76,10 +76,10 @@ const ChartsSection = ({ transactions = [] }: ChartsSectionProps) => {
     <div className="space-y-4">
       {/* Date Range Filter */}
       <div className="flex justify-end">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-2 flex gap-2">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-2 flex flex-wrap gap-2">
           <button
             onClick={() => setDateRange('7')}
-            className={`px-4 py-1 rounded-md text-sm font-medium transition-colors ${
+            className={`px-3 sm:px-4 py-1 rounded-md text-xs sm:text-sm font-medium transition-colors ${
               dateRange === '7'
                 ? 'bg-green-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -89,7 +89,7 @@ const ChartsSection = ({ transactions = [] }: ChartsSectionProps) => {
           </button>
           <button
             onClick={() => setDateRange('30')}
-            className={`px-4 py-1 rounded-md text-sm font-medium transition-colors ${
+            className={`px-3 sm:px-4 py-1 rounded-md text-xs sm:text-sm font-medium transition-colors ${
               dateRange === '30'
                 ? 'bg-green-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -99,7 +99,7 @@ const ChartsSection = ({ transactions = [] }: ChartsSectionProps) => {
           </button>
           <button
             onClick={() => setDateRange('90')}
-            className={`px-4 py-1 rounded-md text-sm font-medium transition-colors ${
+            className={`px-3 sm:px-4 py-1 rounded-md text-xs sm:text-sm font-medium transition-colors ${
               dateRange === '90'
                 ? 'bg-green-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -111,10 +111,10 @@ const ChartsSection = ({ transactions = [] }: ChartsSectionProps) => {
       </div>
 
       {/* Charts Container */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Inflow vs Outflow Chart */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Inflow vs Outflow</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">Inflow vs Outflow</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -130,7 +130,7 @@ const ChartsSection = ({ transactions = [] }: ChartsSectionProps) => {
 
         {/* Stock Level Over Time Chart */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Stock Level Over Time</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">Stock Level Over Time</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
