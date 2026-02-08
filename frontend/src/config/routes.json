@@ -1,0 +1,32 @@
+[
+  {
+    "path": "/dashboard",
+    "component": "Dashboard",
+    "tabName": "Dashboard"
+  },
+  {
+    "path": "/inventory",
+    "component": "Inventory",
+    "tabName": "Inventory"
+  },
+  {
+    "path": "/attendance",
+    "component": "Attendance",
+    "tabName": "Attendance"
+  },
+  {
+    "path": "/employees",
+    "component": "Employees",
+    "tabName": "Employees"
+  },
+  {
+    "path": "/expenses",
+    "component": "ExpensesAndIncome",
+    "tabName": "Expenses & Income"
+  },
+  {
+    "path":"/profit-and-loss",
+    "component":"ProfitAndLoss",
+    "tabName":"Profit & Loss"
+  }
+]
