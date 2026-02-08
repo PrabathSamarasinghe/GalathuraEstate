@@ -7,7 +7,7 @@ import type {
   AttendanceFormData,
   AttendanceSummary,
 } from "../utils/Interfaces";
-import { AttendanceStatus, PayType, EmployeeStatus } from "../utils/enums";
+import { AttendanceStatus, EmployeeStatus } from "../utils/enums";
 import BulkAttendanceEntry from "../components/AttendanceComponents/BulkAttendanceEntry";
 import AttendanceSummaryCard from "../components/AttendanceComponents/AttendanceSummaryCard";
 import AttendanceTable from "../components/AttendanceComponents/AttendanceTable";
